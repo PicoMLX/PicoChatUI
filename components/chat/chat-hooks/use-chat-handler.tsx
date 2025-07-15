@@ -15,7 +15,7 @@ import {
   createTempMessages,
   handleCreateChat,
   handleCreateMessages,
-  handleHostedChat,
+  handleCustomChat,
   handleLocalChat,
   handleRetrieval,
   processResponse,
@@ -108,9 +108,7 @@ export const useChatHandler = () => {
         includeProfileContext: selectedAssistant.include_profile_context,
         includeWorkspaceInstructions:
           selectedAssistant.include_workspace_instructions,
-        embeddingsProvider: selectedAssistant.embeddings_provider as
-          | "openai"
-          | "local"
+        embeddingsProvider: "local"
       })
 
       let allFiles = []
@@ -152,9 +150,7 @@ export const useChatHandler = () => {
         includeProfileContext: selectedPreset.include_profile_context,
         includeWorkspaceInstructions:
           selectedPreset.include_workspace_instructions,
-        embeddingsProvider: selectedPreset.embeddings_provider as
-          | "openai"
-          | "local"
+        embeddingsProvider: "local"
       })
     } else if (selectedWorkspace) {
       // setChatSettings({
@@ -272,70 +268,34 @@ export const useChatHandler = () => {
 
       let generatedText = ""
 
-      if (selectedTools.length > 0) {
-        setToolInUse("Tools")
-
-        const formattedMessages = await buildFinalMessages(
+      if (modelData!.provider === "ollama") {
+        generatedText = await handleLocalChat(
           payload,
           profile!,
-          chatImages
-        )
-
-        const response = await fetch("/api/chat/tools", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            chatSettings: payload.chatSettings,
-            messages: formattedMessages,
-            selectedTools
-          })
-        })
-
-        setToolInUse("none")
-
-        generatedText = await processResponse(
-          response,
-          isRegeneration
-            ? payload.chatMessages[payload.chatMessages.length - 1]
-            : tempAssistantChatMessage,
-          true,
+          chatSettings!,
+          tempAssistantChatMessage,
+          isRegeneration,
           newAbortController,
+          setIsGenerating,
           setFirstTokenReceived,
           setChatMessages,
           setToolInUse
         )
-      } else {
-        if (modelData!.provider === "ollama") {
-          generatedText = await handleLocalChat(
-            payload,
-            profile!,
-            chatSettings!,
-            tempAssistantChatMessage,
-            isRegeneration,
-            newAbortController,
-            setIsGenerating,
-            setFirstTokenReceived,
-            setChatMessages,
-            setToolInUse
-          )
-        } else {
-          generatedText = await handleHostedChat(
-            payload,
-            profile!,
-            modelData!,
-            tempAssistantChatMessage,
-            isRegeneration,
-            newAbortController,
-            newMessageImages,
-            chatImages,
-            setIsGenerating,
-            setFirstTokenReceived,
-            setChatMessages,
-            setToolInUse
-          )
-        }
+      } else if (modelData!.provider === "custom") {
+        generatedText = await handleCustomChat(
+          payload,
+          profile!,
+          modelData!,
+          tempAssistantChatMessage,
+          isRegeneration,
+          newAbortController,
+          newMessageImages,
+          chatImages,
+          setIsGenerating,
+          setFirstTokenReceived,
+          setChatMessages,
+          setToolInUse
+        )
       }
 
       if (!currentChat) {
