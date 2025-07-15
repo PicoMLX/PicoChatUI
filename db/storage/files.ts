@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { toast } from "sonner"
 
 export const uploadFile = async (
@@ -21,21 +21,25 @@ export const uploadFile = async (
 
   const filePath = `${payload.user_id}/${Buffer.from(payload.file_id).toString("base64")}`
 
-  const { error } = await supabase.storage
-    .from("files")
-    .upload(filePath, file, {
-      upsert: true
-    })
+  try {
+    const { error } = await dbClient.storage
+      .from("files")
+      .upload(filePath, file, {
+        upsert: true
+      })
 
-  if (error) {
+    if (error) {
+      throw new Error("Error uploading file")
+    }
+
+    return filePath
+  } catch (error: any) {
     throw new Error("Error uploading file")
   }
-
-  return filePath
 }
 
 export const deleteFileFromStorage = async (filePath: string) => {
-  const { error } = await supabase.storage.from("files").remove([filePath])
+  const { error } = await dbClient.storage.from("files").remove([filePath])
 
   if (error) {
     toast.error("Failed to remove file!")
@@ -44,7 +48,7 @@ export const deleteFileFromStorage = async (filePath: string) => {
 }
 
 export const getFileFromStorage = async (filePath: string) => {
-  const { data, error } = await supabase.storage
+  const { data, error } = await dbClient.storage
     .from("files")
     .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
 

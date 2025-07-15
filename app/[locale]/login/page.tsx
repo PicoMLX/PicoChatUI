@@ -2,12 +2,9 @@ import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { createClient } from "@/lib/supabase/server"
-import { Database } from "@/supabase/types"
-import { createServerClient } from "@supabase/ssr"
+import { authClient } from "@/lib/auth/client"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
-import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
@@ -20,66 +17,29 @@ export default async function Login({
   searchParams: Promise<{ message: string }>
 }) {
   const { message } = await searchParams
-  const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        }
-      }
-    }
-  )
-  const session = (await supabase.auth.getSession()).data.session
-
-  if (session) {
-    const { data: homeWorkspace, error } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .eq("is_home", true)
-      .single()
-
-    if (!homeWorkspace) {
-      throw new Error(error.message)
-    }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
-  }
 
   const signIn = async (formData: FormData) => {
     "use server"
 
     const email = formData.get("email") as string
     const password = formData.get("password") as string
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
+    try {
+      const { data, error } = await authClient.signInWithPassword({
+        email,
+        password
+      })
 
-    if (error) {
+      if (error) {
+        return redirect(`/login?message=${error.message}`)
+      }
+
+      // For now, redirect to a default workspace
+      // In a real implementation, you'd get the user's home workspace
+      return redirect(`/workspace-1/chat`)
+    } catch (error: any) {
       return redirect(`/login?message=${error.message}`)
     }
-
-    const { data: homeWorkspace, error: homeWorkspaceError } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", data.user.id)
-      .eq("is_home", true)
-      .single()
-
-    if (!homeWorkspace) {
-      throw new Error(
-        homeWorkspaceError?.message || "An unexpected error occurred"
-      )
-    }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
   }
 
   const getEnvVarOrEdgeConfigValue = async (name: string) => {
@@ -120,47 +80,33 @@ export default async function Login({
       }
     }
 
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
+    try {
+      const { error } = await authClient.signUp({
+        email,
+        password
+      })
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
-        // emailRedirectTo: `${origin}/auth/callback`
+      if (error) {
+        console.error(error)
+        return redirect(`/login?message=${error.message}`)
       }
-    })
 
-    if (error) {
-      console.error(error)
+      return redirect("/setup")
+    } catch (error: any) {
       return redirect(`/login?message=${error.message}`)
     }
-
-    return redirect("/setup")
-
-    // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
-    // return redirect("/login?message=Check email to continue sign in process")
   }
 
   const handleResetPassword = async (formData: FormData) => {
     "use server"
 
-    const headersList = await headers()
-    const origin = headersList.get("origin")
     const email = formData.get("email") as string
-    const cookieStore = cookies()
-    const supabase = await createClient(cookieStore)
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?next=/login/password`
-    })
-
-    if (error) {
-      return redirect(`/login?message=${error.message}`)
-    }
-
-    return redirect("/login?message=Check email to reset password")
+    // For now, just redirect with a message
+    // In a real implementation, you'd send a password reset email
+    return redirect(
+      "/login?message=Password reset functionality not implemented yet"
+    )
   }
 
   return (
@@ -202,20 +148,15 @@ export default async function Login({
           Sign Up
         </SubmitButton>
 
-        <div className="text-muted-foreground mt-1 flex justify-center text-sm">
-          <span className="mr-1">Forgot your password?</span>
-          <button
-            formAction={handleResetPassword}
-            className="text-primary ml-1 underline hover:opacity-80"
-          >
-            Reset
-          </button>
-        </div>
+        <SubmitButton
+          formAction={handleResetPassword}
+          className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
+        >
+          Reset Password
+        </SubmitButton>
 
         {message && (
-          <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
-            {message}
-          </p>
+          <p className="mt-4 p-4 text-center text-sm text-red-500">{message}</p>
         )}
       </form>
     </div>

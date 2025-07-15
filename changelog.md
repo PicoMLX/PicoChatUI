@@ -1,3 +1,69 @@
+# PicoChatUI Changelog
+
+## Supabase Removal (Latest)
+
+### Overview
+Removed Supabase dependency and replaced it with a localhost-based authentication and database system to simplify the application architecture.
+
+### Major Changes
+
+#### Dependencies Removed
+- `@supabase/ssr` - Supabase SSR client
+- `@supabase/supabase-js` - Supabase JavaScript client
+- All Supabase CLI scripts from package.json
+
+#### New Authentication System
+- Created `lib/auth/client.ts` - New authentication client
+- Created `app/api/auth/login/route.ts` - Login endpoint
+- Created `app/api/auth/signup/route.ts` - Signup endpoint  
+- Created `app/api/auth/logout/route.ts` - Logout endpoint
+- Created `app/api/auth/session/route.ts` - Session management endpoint
+
+#### New Database System
+- Created `lib/db/client.ts` - New database client to replace Supabase
+- Updated database operations to use localhost API endpoints
+- Implemented basic CRUD operations and storage functionality
+
+#### Updated Components
+- `app/[locale]/login/page.tsx` - Updated to use new auth system
+- `middleware.ts` - Updated to use new session management
+- `app/[locale]/setup/page.tsx` - Updated to use new auth system
+- `app/[locale]/login/password/page.tsx` - Updated auth checks
+- `lib/server/server-chat-helpers.ts` - Updated to use mock profile
+- `db/profile.ts` - Updated to use new database client
+- `db/storage/files.ts` - Updated to use new storage client
+- `app/auth/callback/route.ts` - Simplified for new auth system
+
+#### Configuration Changes
+- Removed `supabase/` directory and all Supabase configuration
+- Removed `lib/supabase/` directory and Supabase client files
+- Updated environment variables to remove Supabase-specific ones
+- Updated `README.md` with new localhost-based setup instructions
+
+#### Benefits
+- Simplified setup (no Docker or Supabase CLI required)
+- Local development with localhost endpoints
+- Reduced dependencies and complexity
+- Easier deployment without external database setup
+
+### Files Still Needing Updates
+The following database files still need to be updated to use the new database client:
+- `db/assistants.ts`
+- `db/files.ts` 
+- `db/assistant-tools.ts`
+- `db/collection-files.ts`
+- `db/tools.ts`
+- `db/storage/workspace-images.ts`
+- `db/assistant-files.ts`
+- `db/message-file-items.ts`
+- `db/models.ts`
+- `db/assistant-collections.ts`
+- `db/storage/message-images.ts`
+- `db/storage/profile-images.ts`
+- And several other database-related files
+
+---
+
 # Ollama Simplification Log
 
 ## Overview
