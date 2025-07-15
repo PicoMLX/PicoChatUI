@@ -55,7 +55,7 @@ export const handleRetrieval = async (
   userInput: string,
   newMessageFiles: ChatFile[],
   chatFiles: ChatFile[],
-  embeddingsProvider: "openai" | "local",
+  embeddingsProvider: "local",
   sourceCount: number
 ) => {
   const response = await fetch("/api/retrieval/retrieve", {
@@ -187,7 +187,7 @@ export const handleLocalChat = async (
   )
 }
 
-export const handleHostedChat = async (
+export const handleCustomChat = async (
   payload: ChatPayload,
   profile: Tables<"profiles">,
   modelData: LLM,
@@ -201,27 +201,15 @@ export const handleHostedChat = async (
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setToolInUse: React.Dispatch<React.SetStateAction<string>>
 ) => {
-  const provider =
-    modelData.provider === "openai" && profile.use_azure_openai
-      ? "azure"
-      : modelData.provider
-
   let draftMessages = await buildFinalMessages(payload, profile, chatImages)
+  let formattedMessages = draftMessages
 
-  let formattedMessages : any[] = []
-  if (provider === "google") {
-    formattedMessages = await adaptMessagesForGoogleGemini(payload, draftMessages)
-  } else {
-    formattedMessages = draftMessages
-  }
-
-  const apiEndpoint =
-    provider === "custom" ? "/api/chat/custom" : `/api/chat/${provider}`
+  const apiEndpoint = "/api/chat/custom"
 
   const requestBody = {
     chatSettings: payload.chatSettings,
     messages: formattedMessages,
-    customModelId: provider === "custom" ? modelData.hostedId : ""
+    customModelId: modelData.hostedId
   }
 
   const response = await fetchChatResponse(

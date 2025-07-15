@@ -133,15 +133,6 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
 
         setEnvKeyMap(hostedModelRes.envKeyMap)
         setAvailableHostedModels(hostedModelRes.hostedModels)
-
-        if (
-          profile["openrouter_api_key"] ||
-          hostedModelRes.envKeyMap["openrouter"]
-        ) {
-          const openRouterModels = await fetchOpenRouterModels()
-          if (!openRouterModels) return
-          setAvailableOpenRouterModels(openRouterModels)
-        }
       }
 
       if (process.env.NEXT_PUBLIC_OLLAMA_URL) {

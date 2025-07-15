@@ -1,19 +1,24 @@
 import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
-import {
-  processCSV,
-  processJSON,
-  processMarkdown,
-  processPdf,
-  processTxt
-} from "@/lib/retrieval/processing"
+import { processCSV } from "@/lib/retrieval/processing"
+import { processJSON } from "@/lib/retrieval/processing"
+import { processMarkdown } from "@/lib/retrieval/processing"
+import { processPdf } from "@/lib/retrieval/processing"
+import { processTxt } from "@/lib/retrieval/processing"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
 
 export async function POST(req: Request) {
+  const json = await req.json()
+  const { text, fileId, embeddingsProvider, fileExtension } = json as {
+    text: string
+    fileId: string
+    embeddingsProvider: "local"
+    fileExtension: string
+  }
+
   try {
     const supabaseAdmin = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,56 +27,8 @@ export async function POST(req: Request) {
 
     const profile = await getServerProfile()
 
-    const formData = await req.formData()
-
-    const file_id = formData.get("file_id") as string
-    const embeddingsProvider = formData.get("embeddingsProvider") as string
-
-    const { data: fileMetadata, error: metadataError } = await supabaseAdmin
-      .from("files")
-      .select("*")
-      .eq("id", file_id)
-      .single()
-
-    if (metadataError) {
-      throw new Error(
-        `Failed to retrieve file metadata: ${metadataError.message}`
-      )
-    }
-
-    if (!fileMetadata) {
-      throw new Error("File not found")
-    }
-
-    if (fileMetadata.user_id !== profile.user_id) {
-      throw new Error("Unauthorized")
-    }
-
-    const { data: file, error: fileError } = await supabaseAdmin.storage
-      .from("files")
-      .download(fileMetadata.file_path)
-
-    if (fileError)
-      throw new Error(`Failed to retrieve file: ${fileError.message}`)
-
-    const fileBuffer = Buffer.from(await file.arrayBuffer())
-    const blob = new Blob([fileBuffer])
-    const fileExtension = fileMetadata.name.split(".").pop()?.toLowerCase()
-
-    if (embeddingsProvider === "openai") {
-      try {
-        if (profile.use_azure_openai) {
-          checkApiKey(profile.azure_openai_api_key, "Azure OpenAI")
-        } else {
-          checkApiKey(profile.openai_api_key, "OpenAI")
-        }
-      } catch (error: any) {
-        error.message =
-          error.message +
-          ", make sure it is configured or else use local embeddings"
-        throw error
-      }
-    }
+    // Convert text to Blob for processing functions
+    const blob = new Blob([text], { type: "text/plain" })
 
     let chunks: FileItemChunk[] = []
 
@@ -99,31 +56,7 @@ export async function POST(req: Request) {
 
     let embeddings: any = []
 
-    let openai
-    if (profile.use_azure_openai) {
-      openai = new OpenAI({
-        apiKey: profile.azure_openai_api_key || "",
-        baseURL: `${profile.azure_openai_endpoint}/openai/deployments/${profile.azure_openai_embeddings_id}`,
-        defaultQuery: { "api-version": "2023-12-01-preview" },
-        defaultHeaders: { "api-key": profile.azure_openai_api_key }
-      })
-    } else {
-      openai = new OpenAI({
-        apiKey: profile.openai_api_key || "",
-        organization: profile.openai_organization_id
-      })
-    }
-
-    if (embeddingsProvider === "openai") {
-      const response = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: chunks.map(chunk => chunk.content)
-      })
-
-      embeddings = response.data.map((item: any) => {
-        return item.embedding
-      })
-    } else if (embeddingsProvider === "local") {
+    if (embeddingsProvider === "local") {
       const embeddingPromises = chunks.map(async chunk => {
         try {
           return await generateLocalEmbedding(chunk.content)
@@ -138,14 +71,11 @@ export async function POST(req: Request) {
     }
 
     const file_items = chunks.map((chunk, index) => ({
-      file_id,
+      file_id: fileId,
       user_id: profile.user_id,
       content: chunk.content,
       tokens: chunk.tokens,
-      openai_embedding:
-        embeddingsProvider === "openai"
-          ? ((embeddings[index] || null) as any)
-          : null,
+      openai_embedding: null,
       local_embedding:
         embeddingsProvider === "local"
           ? ((embeddings[index] || null) as any)
@@ -159,7 +89,7 @@ export async function POST(req: Request) {
     await supabaseAdmin
       .from("files")
       .update({ tokens: totalTokens })
-      .eq("id", file_id)
+      .eq("id", fileId)
 
     return new NextResponse("Embed Successful", {
       status: 200

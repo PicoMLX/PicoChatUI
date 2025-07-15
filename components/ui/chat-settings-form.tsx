@@ -2,11 +2,12 @@
 
 import { ChatbotUIContext } from "@/context/context"
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
-import { ChatSettings } from "@/types"
+import { ChatSettings, LLMID } from "@/types"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { FC, useContext } from "react"
 import { ModelSelect } from "../models/model-select"
 import { AdvancedSettings } from "./advanced-settings"
+import { Button } from "./button"
 import { Checkbox } from "./checkbox"
 import { Label } from "./label"
 import {
@@ -97,22 +98,16 @@ const AdvancedContent: FC<AdvancedContentProps> = ({
   onChangeChatSettings,
   showTooltip
 }) => {
-  const { profile, selectedWorkspace, availableOpenRouterModels, models } =
-    useContext(ChatbotUIContext)
+  const { profile, selectedWorkspace, models } = useContext(ChatbotUIContext)
 
   const isCustomModel = models.some(
     model => model.model_id === chatSettings.model
   )
 
-  function findOpenRouterModel(modelId: string) {
-    return availableOpenRouterModels.find(model => model.modelId === modelId)
-  }
-
-  const MODEL_LIMITS = CHAT_SETTING_LIMITS[chatSettings.model] || {
+  const MODEL_LIMITS = CHAT_SETTING_LIMITS[chatSettings.model as LLMID] || {
     MIN_TEMPERATURE: 0,
     MAX_TEMPERATURE: 1,
-    MAX_CONTEXT_LENGTH:
-      findOpenRouterModel(chatSettings.model)?.maxContext || 4096
+    MAX_CONTEXT_LENGTH: 4096
   }
 
   return (
@@ -226,7 +221,7 @@ const AdvancedContent: FC<AdvancedContentProps> = ({
 
         <Select
           value={chatSettings.embeddingsProvider}
-          onValueChange={(embeddingsProvider: "openai" | "local") => {
+          onValueChange={(embeddingsProvider: "local") => {
             onChangeChatSettings({
               ...chatSettings,
               embeddingsProvider
@@ -234,17 +229,11 @@ const AdvancedContent: FC<AdvancedContentProps> = ({
           }}
         >
           <SelectTrigger>
-            <SelectValue defaultValue="openai" />
+            <SelectValue defaultValue="local" />
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="openai">
-              {profile?.use_azure_openai ? "Azure OpenAI" : "OpenAI"}
-            </SelectItem>
-
-            {window.location.hostname === "localhost" && (
-              <SelectItem value="local">Local</SelectItem>
-            )}
+            <SelectItem value="local">Local</SelectItem>
           </SelectContent>
         </Select>
       </div>

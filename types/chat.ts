@@ -2,13 +2,13 @@ import { Tables } from "@/supabase/types"
 import { ChatMessage, LLMID } from "."
 
 export interface ChatSettings {
-  model: LLMID
+  model: string
   prompt: string
   temperature: number
   contextLength: number
   includeProfileContext: boolean
   includeWorkspaceInstructions: boolean
-  embeddingsProvider: "openai" | "local"
+  embeddingsProvider: "local"
 }
 
 export interface ChatPayload {

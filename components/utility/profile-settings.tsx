@@ -164,62 +164,22 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
     toast.success("Profile updated!")
 
-    const providers = [
-      "openai",
-      "google",
-      "azure",
-      "anthropic",
-      "mistral",
-      "groq",
-      "perplexity",
-      "openrouter"
-    ]
+    // Only support Ollama and custom providers
+    const providers = ["ollama"]
 
     providers.forEach(async provider => {
-      let providerKey: keyof typeof profile
-
-      if (provider === "google") {
-        providerKey = "google_gemini_api_key"
-      } else if (provider === "azure") {
-        providerKey = "azure_openai_api_key"
-      } else {
-        providerKey = `${provider}_api_key` as keyof typeof profile
-      }
-
       const models = LLM_LIST_MAP[provider]
       const envKeyActive = envKeyMap[provider]
 
       if (!envKeyActive) {
-        const hasApiKey = !!updatedProfile[providerKey]
-
-        if (provider === "openrouter") {
-          if (hasApiKey && availableOpenRouterModels.length === 0) {
-            const openrouterModels: OpenRouterLLM[] =
-              await fetchOpenRouterModels()
-            setAvailableOpenRouterModels(prev => {
-              const newModels = openrouterModels.filter(
-                model =>
-                  !prev.some(prevModel => prevModel.modelId === model.modelId)
-              )
-              return [...prev, ...newModels]
-            })
-          } else {
-            setAvailableOpenRouterModels([])
-          }
-        } else {
-          if (hasApiKey && Array.isArray(models)) {
-            setAvailableHostedModels(prev => {
-              const newModels = models.filter(
-                model =>
-                  !prev.some(prevModel => prevModel.modelId === model.modelId)
-              )
-              return [...prev, ...newModels]
-            })
-          } else if (!hasApiKey && Array.isArray(models)) {
-            setAvailableHostedModels(prev =>
-              prev.filter(model => !models.includes(model))
+        if (Array.isArray(models)) {
+          setAvailableHostedModels(prev => {
+            const newModels = models.filter(
+              model =>
+                !prev.some(prevModel => prevModel.modelId === model.modelId)
             )
-          }
+            return [...prev, ...newModels]
+          })
         }
       }
     })
