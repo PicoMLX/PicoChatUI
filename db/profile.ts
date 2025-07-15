@@ -1,71 +1,69 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+import { dbClient } from "@/lib/db/client"
 
 export const getProfileByUserId = async (userId: string) => {
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", userId)
-    .single()
+  try {
+    const { data: profile } = await dbClient
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .single()
 
-  if (!profile) {
+    if (!profile) {
+      throw new Error("Profile not found")
+    }
+
+    return profile
+  } catch (error: any) {
     throw new Error(error.message)
   }
-
-  return profile
 }
 
-export const getProfilesByUserId = async (userId: string) => {
-  const { data: profiles, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", userId)
+export const getProfilesByWorkspaceId = async (workspaceId: string) => {
+  try {
+    const { data: profiles } = await dbClient
+      .from("profiles")
+      .select("*")
+      .eq("workspace_id", workspaceId)
 
-  if (!profiles) {
+    return profiles || []
+  } catch (error: any) {
     throw new Error(error.message)
   }
-
-  return profiles
 }
 
-export const createProfile = async (profile: TablesInsert<"profiles">) => {
-  const { data: createdProfile, error } = await supabase
-    .from("profiles")
-    .insert([profile])
-    .select("*")
-    .single()
+export const createProfile = async (profile: any) => {
+  try {
+    const { data: createdProfile } = await dbClient
+      .from("profiles")
+      .insert([profile])
+      .select("*")
+      .single()
 
-  if (error) {
+    return createdProfile
+  } catch (error: any) {
     throw new Error(error.message)
   }
-
-  return createdProfile
 }
 
-export const updateProfile = async (
-  profileId: string,
-  profile: TablesUpdate<"profiles">
-) => {
-  const { data: updatedProfile, error } = await supabase
-    .from("profiles")
-    .update(profile)
-    .eq("id", profileId)
-    .select("*")
-    .single()
+export const updateProfile = async (profileId: string, profile: any) => {
+  try {
+    const { data: updatedProfile } = await dbClient
+      .from("profiles")
+      .update(profile)
+      .eq("id", profileId)
+      .select("*")
+      .single()
 
-  if (error) {
+    return updatedProfile
+  } catch (error: any) {
     throw new Error(error.message)
   }
-
-  return updatedProfile
 }
 
 export const deleteProfile = async (profileId: string) => {
-  const { error } = await supabase.from("profiles").delete().eq("id", profileId)
-
-  if (error) {
+  try {
+    await dbClient.from("profiles").delete().eq("id", profileId).execute()
+  } catch (error: any) {
     throw new Error(error.message)
   }
-
-  return true
 }

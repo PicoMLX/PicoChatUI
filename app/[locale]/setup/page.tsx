@@ -7,8 +7,7 @@ import {
   getWorkspacesByUserId
 } from "@/db/workspaces"
 import { fetchHostedModels } from "@/lib/models/fetch-models"
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesUpdate } from "@/supabase/types"
+import { authClient } from "@/lib/auth/client"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { APIStep } from "../../../components/setup/api-step"
@@ -45,32 +44,36 @@ export default function SetupPage() {
 
   useEffect(() => {
     ;(async () => {
-      const session = (await supabase.auth.getSession()).data.session
+      try {
+        const { data } = await authClient.getSession()
+        const session = data.session
 
-      if (!session) {
-        return router.push("/login")
-      } else {
-        const user = session.user
-
-        const profile = await getProfileByUserId(user.id)
-        setProfile(profile)
-        setUsername(profile.username)
-
-        if (!profile.has_onboarded) {
-          setLoading(false)
+        if (!session) {
+          return router.push("/login")
         } else {
-          const data = await fetchHostedModels(profile)
+          const user = session.user
 
-          if (!data) return
+          const profile = await getProfileByUserId(user.id)
+          setProfile(profile)
+          setUsername(profile.username)
 
-          setEnvKeyMap(data.envKeyMap)
-          setAvailableHostedModels(data.hostedModels)
+          if (!profile.has_onboarded) {
+            setLoading(false)
+          } else {
+            const data = await fetchHostedModels(profile)
 
-          const homeWorkspaceId = await getHomeWorkspaceByUserId(
-            session.user.id
-          )
-          return router.push(`/${homeWorkspaceId}/chat`)
+            if (!data) return
+
+            setEnvKeyMap(data.envKeyMap)
+            setAvailableHostedModels(data.hostedModels)
+
+            const homeWorkspaceId = await getHomeWorkspaceByUserId(user.id)
+            return router.push(`/${homeWorkspaceId}/chat`)
+          }
         }
+      } catch (error) {
+        console.error("Setup error:", error)
+        router.push("/login")
       }
     })()
   }, [])
@@ -88,32 +91,42 @@ export default function SetupPage() {
   }
 
   const handleSaveSetupSetting = async () => {
-    const session = (await supabase.auth.getSession()).data.session
-    if (!session) {
-      return router.push("/login")
+    try {
+      const { data } = await authClient.getSession()
+      const session = data.session
+
+      if (!session) {
+        return router.push("/login")
+      }
+
+      const user = session.user
+      const profile = await getProfileByUserId(user.id)
+
+      const updateProfilePayload = {
+        ...profile,
+        has_onboarded: true,
+        display_name: displayName,
+        username
+      }
+
+      const updatedProfile = await updateProfile(
+        profile.id,
+        updateProfilePayload
+      )
+      setProfile(updatedProfile)
+
+      const workspaces = await getWorkspacesByUserId(profile.user_id)
+      const homeWorkspace = workspaces.find((w: any) => w.is_home)
+
+      // There will always be a home workspace
+      setSelectedWorkspace(homeWorkspace!)
+      setWorkspaces(workspaces)
+
+      return router.push(`/${homeWorkspace?.id}/chat`)
+    } catch (error) {
+      console.error("Save setup error:", error)
+      router.push("/login")
     }
-
-    const user = session.user
-    const profile = await getProfileByUserId(user.id)
-
-    const updateProfilePayload: TablesUpdate<"profiles"> = {
-      ...profile,
-      has_onboarded: true,
-      display_name: displayName,
-      username
-    }
-
-    const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
-    setProfile(updatedProfile)
-
-    const workspaces = await getWorkspacesByUserId(profile.user_id)
-    const homeWorkspace = workspaces.find(w => w.is_home)
-
-    // There will always be a home workspace
-    setSelectedWorkspace(homeWorkspace!)
-    setWorkspaces(workspaces)
-
-    return router.push(`/${homeWorkspace?.id}/chat`)
   }
 
   const renderStep = (stepNum: number) => {
