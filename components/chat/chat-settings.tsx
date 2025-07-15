@@ -37,11 +37,12 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
       ...chatSettings,
       temperature: Math.min(
         chatSettings.temperature,
-        CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_TEMPERATURE || 1
+        CHAT_SETTING_LIMITS[chatSettings.model as LLMID]?.MAX_TEMPERATURE || 1
       ),
       contextLength: Math.min(
         chatSettings.contextLength,
-        CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_CONTEXT_LENGTH || 4096
+        CHAT_SETTING_LIMITS[chatSettings.model as LLMID]?.MAX_CONTEXT_LENGTH ||
+          4096
       )
     })
   }, [chatSettings?.model])
