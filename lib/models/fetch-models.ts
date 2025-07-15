@@ -5,13 +5,8 @@ import { LLM_LIST_MAP } from "./llm/llm-list"
 
 export const fetchHostedModels = async (profile: Tables<"profiles">) => {
   try {
-    const providers = ["google", "anthropic", "mistral", "groq", "perplexity"]
-
-    if (profile.use_azure_openai) {
-      providers.push("azure")
-    } else {
-      providers.push("openai")
-    }
+    // Only support Ollama for hosted models
+    const providers = ["ollama"]
 
     const response = await fetch("/api/keys")
 
@@ -24,22 +19,10 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
     let modelsToAdd: LLM[] = []
 
     for (const provider of providers) {
-      let providerKey: keyof typeof profile
+      const models = LLM_LIST_MAP[provider]
 
-      if (provider === "google") {
-        providerKey = "google_gemini_api_key"
-      } else if (provider === "azure") {
-        providerKey = "azure_openai_api_key"
-      } else {
-        providerKey = `${provider}_api_key` as keyof typeof profile
-      }
-
-      if (profile?.[providerKey] || data.isUsingEnvKeyMap[provider]) {
-        const models = LLM_LIST_MAP[provider]
-
-        if (Array.isArray(models)) {
-          modelsToAdd.push(...models)
-        }
+      if (Array.isArray(models)) {
+        modelsToAdd.push(...models)
       }
     }
 
@@ -80,34 +63,6 @@ export const fetchOllamaModels = async () => {
 }
 
 export const fetchOpenRouterModels = async () => {
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/models")
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter server is not responding.`)
-    }
-
-    const { data } = await response.json()
-
-    const openRouterModels = data.map(
-      (model: {
-        id: string
-        name: string
-        context_length: number
-      }): OpenRouterLLM => ({
-        modelId: model.id as LLMID,
-        modelName: model.id,
-        provider: "openrouter",
-        hostedId: model.name,
-        platformLink: "https://openrouter.dev",
-        imageInput: false,
-        maxContext: model.context_length
-      })
-    )
-
-    return openRouterModels
-  } catch (error) {
-    console.error("Error fetching Open Router models: " + error)
-    toast.error("Error fetching Open Router models: " + error)
-  }
+  // OpenRouter is no longer supported
+  return []
 }
