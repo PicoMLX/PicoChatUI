@@ -119,13 +119,15 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
     const messageFileItems = await Promise.all(messageFileItemPromises)
 
-    const uniqueFileItems = messageFileItems.flatMap(item => item.file_items)
+    const uniqueFileItems = messageFileItems.flatMap(
+      item => (item as any).file_items || []
+    )
     setChatFileItems(uniqueFileItems)
 
     const chatFiles = await getChatFilesByChatId(params.chatid as string)
 
     setChatFiles(
-      chatFiles.files.map((file: any) => ({
+      ((chatFiles as any).files || []).map((file: any) => ({
         id: file.id,
         name: file.name,
         type: file.type,
@@ -140,9 +142,14 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       return {
         message,
         fileItems: messageFileItems
-          .filter(messageFileItem => messageFileItem.id === message.id)
+          .filter(
+            messageFileItem =>
+              (messageFileItem as any).id === (message as any).id
+          )
           .flatMap(messageFileItem =>
-            messageFileItem.file_items.map((fileItem: any) => fileItem.id)
+            ((messageFileItem as any).file_items || []).map(
+              (fileItem: any) => fileItem.id
+            )
           )
       }
     })
@@ -162,9 +169,9 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       if (assistant) {
         setSelectedAssistant(assistant)
 
-        const assistantTools = (
-          await getAssistantToolsByAssistantId(assistant.id)
-        ).tools
+        const assistantTools =
+          ((await getAssistantToolsByAssistantId(assistant.id)) as any).tools ||
+          []
         setSelectedTools(assistantTools)
       }
     }
