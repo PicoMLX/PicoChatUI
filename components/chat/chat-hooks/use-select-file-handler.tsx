@@ -97,6 +97,7 @@ export const useSelectFileHandler = () => {
             file,
             {
               user_id: profile.user_id,
+              folder_id: null,
               description: "",
               file_path: "",
               name: file.name,
@@ -158,6 +159,7 @@ export const useSelectFileHandler = () => {
               file,
               {
                 user_id: profile.user_id,
+                folder_id: null,
                 description: "",
                 file_path: "",
                 name: file.name,

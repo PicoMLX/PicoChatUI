@@ -109,18 +109,20 @@ export const usePromptAndCommand = () => {
     )
 
     setNewMessageFiles(prev => {
-      const newFiles = collectionFiles.files
-        .filter(
-          file =>
-            !prev.some(prevFile => prevFile.id === file.id) &&
-            !chatFiles.some(chatFile => chatFile.id === file.id)
-        )
-        .map(file => ({
-          id: file.id,
-          name: file.name,
-          type: file.type,
-          file: null
-        }))
+      const newFiles =
+        (collectionFiles as any).files ||
+        []
+          .filter(
+            (file: any) =>
+              !prev.some(prevFile => prevFile.id === file.id) &&
+              !chatFiles.some(chatFile => chatFile.id === file.id)
+          )
+          .map((file: any) => ({
+            id: file.id,
+            name: file.name,
+            type: file.type,
+            file: null
+          }))
 
       return [...prev, ...newFiles]
     })
@@ -151,20 +153,20 @@ export const usePromptAndCommand = () => {
 
     let allFiles = []
 
-    const assistantFiles = (await getAssistantFilesByAssistantId(assistant.id))
-      .files
+    const assistantFiles =
+      ((await getAssistantFilesByAssistantId(assistant.id)) as any).files || []
     allFiles = [...assistantFiles]
-    const assistantCollections = (
-      await getAssistantCollectionsByAssistantId(assistant.id)
-    ).collections
+    const assistantCollections =
+      ((await getAssistantCollectionsByAssistantId(assistant.id)) as any)
+        .collections || []
     for (const collection of assistantCollections) {
-      const collectionFiles = (
-        await getCollectionFilesByCollectionId(collection.id)
-      ).files
+      const collectionFiles =
+        ((await getCollectionFilesByCollectionId(collection.id)) as any)
+          .files || []
       allFiles = [...allFiles, ...collectionFiles]
     }
-    const assistantTools = (await getAssistantToolsByAssistantId(assistant.id))
-      .tools
+    const assistantTools =
+      ((await getAssistantToolsByAssistantId(assistant.id)) as any).tools || []
 
     setSelectedTools(assistantTools)
     setChatFiles(

@@ -92,12 +92,12 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setLoading(true)
 
     const workspace = await getWorkspaceById(workspaceId)
-    setSelectedWorkspace(workspace)
+    setSelectedWorkspace(workspace as any)
 
     const assistantData = await getAssistantWorkspacesByWorkspaceId(workspaceId)
-    setAssistants(assistantData.assistants)
+    setAssistants((assistantData as any).assistants || [])
 
-    for (const assistant of assistantData.assistants) {
+    for (const assistant of (assistantData as any).assistants || []) {
       let url = ""
 
       if (assistant.image_path) {
@@ -136,39 +136,41 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
     const collectionData =
       await getCollectionWorkspacesByWorkspaceId(workspaceId)
-    setCollections(collectionData.collections)
+    setCollections((collectionData as any).collections || [])
 
     const folders = await getFoldersByWorkspaceId(workspaceId)
-    setFolders(folders)
+    setFolders((folders as any) || [])
 
     const fileData = await getFileWorkspacesByWorkspaceId(workspaceId)
-    setFiles(fileData.files)
+    setFiles((fileData as any).files || [])
 
     const presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
-    setPresets(presetData.presets)
+    setPresets((presetData as any).presets || [])
 
     const promptData = await getPromptWorkspacesByWorkspaceId(workspaceId)
-    setPrompts(promptData.prompts)
+    setPrompts((promptData as any).prompts || [])
 
     const toolData = await getToolWorkspacesByWorkspaceId(workspaceId)
-    setTools(toolData.tools)
+    setTools((toolData as any).tools || [])
 
     const modelData = await getModelWorkspacesByWorkspaceId(workspaceId)
-    setModels(modelData.models)
+    setModels((modelData as any).models || [])
 
     setChatSettings({
       model: (searchParams.get("model") ||
-        workspace?.default_model ||
+        (workspace as any)?.default_model ||
         "gpt-4-1106-preview") as LLMID,
       prompt:
-        workspace?.default_prompt ||
+        (workspace as any)?.default_prompt ||
         "You are a friendly, helpful AI assistant.",
-      temperature: workspace?.default_temperature || 0.5,
-      contextLength: workspace?.default_context_length || 4096,
-      includeProfileContext: workspace?.include_profile_context || true,
+      temperature: (workspace as any)?.default_temperature || 0.5,
+      contextLength: (workspace as any)?.default_context_length || 4096,
+      includeProfileContext:
+        (workspace as any)?.include_profile_context || true,
       includeWorkspaceInstructions:
-        workspace?.include_workspace_instructions || true,
-      embeddingsProvider: (workspace?.embeddings_provider as "local") || "local"
+        (workspace as any)?.include_workspace_instructions || true,
+      embeddingsProvider:
+        ((workspace as any)?.embeddings_provider as "local") || "local"
     })
 
     setLoading(false)

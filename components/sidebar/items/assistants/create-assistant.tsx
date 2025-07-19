@@ -111,8 +111,11 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
         {
           image: selectedImage,
           user_id: profile.user_id,
+          folder_id: null,
           name,
           description,
+          instructions: null,
+          image_url: null,
           include_profile_context: assistantChatSettings.includeProfileContext,
           include_workspace_instructions:
             assistantChatSettings.includeWorkspaceInstructions,
