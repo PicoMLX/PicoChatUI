@@ -1,5 +1,5 @@
 import { ChatbotUIContext } from "@/context/context"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { IconBooks } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef } from "react"
 import { FileIcon } from "../ui/file-icon"

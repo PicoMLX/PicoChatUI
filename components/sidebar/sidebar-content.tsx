@@ -1,4 +1,4 @@
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { ContentType, DataListType } from "@/types"
 import { FC, useState } from "react"
 import { SidebarCreateButtons } from "./sidebar-create-buttons"

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChatbotUIContext } from "@/context/context"
 import { MODEL_NAME_MAX } from "@/db/limits"
-import { TablesInsert } from "@/supabase/types"
+import { TablesInsert } from "@/types"
 import { FC, useContext, useState } from "react"
 
 interface CreateModelProps {

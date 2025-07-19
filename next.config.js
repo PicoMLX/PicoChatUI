@@ -9,7 +9,21 @@ const withPWA = require("next-pwa")({
 module.exports = withBundleAnalyzer(
   withPWA({
     reactStrictMode: true,
+    output: 'export',
+    trailingSlash: true,
+    experimental: {
+      excludeDefaultMomentLocales: false,
+    },
+    webpack: (config, { isServer }) => {
+      // Exclude backend-reference directory from build
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@/backend-reference': false,
+      }
+      return config
+    },
     images: {
+      unoptimized: true,
       remotePatterns: [
         {
           protocol: "http",

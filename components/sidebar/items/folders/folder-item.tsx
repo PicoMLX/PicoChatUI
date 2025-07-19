@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { ContentType } from "@/types"
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 import { FC, useRef, useState } from "react"

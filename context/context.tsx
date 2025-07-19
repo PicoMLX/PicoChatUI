@@ -1,4 +1,4 @@
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import {
   ChatFile,
   ChatMessage,

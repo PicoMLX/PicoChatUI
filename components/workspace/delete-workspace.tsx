@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { ChatbotUIContext } from "@/context/context"
 import { deleteWorkspace } from "@/db/workspaces"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { FC, useContext, useRef, useState } from "react"
 import { Input } from "../ui/input"
 import { useRouter } from "next/navigation"

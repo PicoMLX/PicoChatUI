@@ -35,7 +35,10 @@ let package = Package(
                  .product(name: "JWTKit", package: "jwt-kit"),
                  .product(name: "Crypto", package: "swift-crypto"),
              ],
-             path: "Sources/PicoChatUIServer"
+             path: "Sources/PicoChatUIServer",
+             plugins: [
+                .plugin(name: "NPMBuildPlugin")
+             ]
          ),
         .target(
             name: "PicoChatUI",
@@ -51,6 +54,10 @@ let package = Package(
             resources: [
                 .copy("build")
             ]
+        ),
+        .plugin(
+            name: "NPMBuildPlugin",
+            capability: .buildTool()
         ),
     ]
 )

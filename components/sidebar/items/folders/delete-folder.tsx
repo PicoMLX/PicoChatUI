@@ -11,7 +11,7 @@ import {
 import { ChatbotUIContext } from "@/context/context"
 import { deleteFolder } from "@/db/folders"
 import { supabase } from "@/lib/supabase/browser-client"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { ContentType } from "@/types"
 import { IconTrash } from "@tabler/icons-react"
 import { FC, useContext, useRef, useState } from "react"

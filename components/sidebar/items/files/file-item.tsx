@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FILE_DESCRIPTION_MAX, FILE_NAME_MAX } from "@/db/limits"
 import { getFileFromStorage } from "@/db/storage/files"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { FC, useState } from "react"
 import { SidebarItem } from "../all/sidebar-display-item"
 

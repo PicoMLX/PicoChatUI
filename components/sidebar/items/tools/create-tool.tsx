@@ -5,7 +5,7 @@ import { TextareaAutosize } from "@/components/ui/textarea-autosize"
 import { ChatbotUIContext } from "@/context/context"
 import { TOOL_DESCRIPTION_MAX, TOOL_NAME_MAX } from "@/db/limits"
 import { validateOpenAPI } from "@/lib/openapi-conversion"
-import { TablesInsert } from "@/supabase/types"
+import { TablesInsert } from "@/types"
 import { FC, useContext, useState } from "react"
 
 interface CreateToolProps {

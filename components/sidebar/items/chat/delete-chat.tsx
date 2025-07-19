@@ -12,7 +12,7 @@ import {
 import { ChatbotUIContext } from "@/context/context"
 import { deleteChat } from "@/db/chats"
 import useHotkey from "@/lib/hooks/use-hotkey"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { IconTrash } from "@tabler/icons-react"
 import { FC, useContext, useRef, useState } from "react"
 

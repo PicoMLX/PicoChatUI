@@ -1,7 +1,7 @@
 import { ChatbotUIContext } from "@/context/context"
 import { createChat } from "@/db/chats"
 import { cn } from "@/lib/utils"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { ContentType, DataItemType } from "@/types"
 import { useRouter } from "next/navigation"
 import { FC, useContext, useRef, useState } from "react"

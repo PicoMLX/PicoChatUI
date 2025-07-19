@@ -3,7 +3,7 @@ import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types"
 import { LLMID } from "@/types"
 import { useContext } from "react"
 
