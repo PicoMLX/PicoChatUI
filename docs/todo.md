@@ -1,179 +1,210 @@
-# TODO: Complete Supabase Removal
+# TODO: Convert to Swift Server Architecture
 
 ## Overview
-This document lists all files that still need to be updated to complete the removal of Supabase dependency and replace it with the new localhost-based system.
+Convert the Next.js frontend to call the Swift server at `/pico/v1/*` endpoints instead of using local `/api/*` routes. The Swift server will serve both the static frontend and provide all API endpoints.
 
-## Database Files to Update
+## Phase 1: Frontend API Conversion
 
-### Core Database Operations
-- [ ] `db/assistants.ts` - Assistant CRUD operations
-- [ ] `db/files.ts` - File management operations
-- [ ] `db/tools.ts` - Tool CRUD operations
-- [ ] `db/models.ts` - Model management operations
-- [ ] `db/presets.ts` - Preset CRUD operations
-- [ ] `db/prompts.ts` - Prompt CRUD operations
-- [ ] `db/workspaces.ts` - Workspace management operations
-- [ ] `db/chats.ts` - Chat CRUD operations
-- [ ] `db/messages.ts` - Message CRUD operations
-- [ ] `db/collections.ts` - Collection CRUD operations
-- [ ] `db/folders.ts` - Folder CRUD operations
+### Step 1: Rollback to Working State
+- [ ] Restore Next.js API routes (rollback from mock approach)
+- [ ] Ensure build works with original `/api/*` endpoints
 
-### Relationship Tables
-- [ ] `db/assistant-tools.ts` - Assistant-tool relationships
-- [ ] `db/assistant-files.ts` - Assistant-file relationships
-- [ ] `db/assistant-collections.ts` - Assistant-collection relationships
-- [ ] `db/collection-files.ts` - Collection-file relationships
-- [ ] `db/message-file-items.ts` - Message-file relationships
+### Step 2: Update API Endpoints
+Replace all `/api/` calls with `/pico/v1/` calls:
 
-### Storage Operations
-- [ ] `db/storage/workspace-images.ts` - Workspace image storage
-- [ ] `db/storage/message-images.ts` - Message image storage
-- [ ] `db/storage/profile-images.ts` - Profile image storage
-- [ ] `db/storage/assistant-images.ts` - Assistant image storage
+#### Authentication Endpoints
+- [ ] `/api/auth/login` → `/pico/v1/auth/login`
+- [ ] `/api/auth/logout` → `/pico/v1/auth/logout`
+- [ ] `/api/auth/signup` → `/pico/v1/auth/signup`
+- [ ] `/api/auth/session` → `/pico/v1/auth/session`
 
-### Limits and Configuration
-- [ ] `db/limits.ts` - Usage limits management
-- [ ] `db/index.ts` - Database initialization and utilities
+#### Chat Endpoints
+- [ ] `/api/chat/custom` → `/pico/v1/chat/custom`
+- [ ] `/api/chat/azure` → `/pico/v1/chat/azure`
+- [ ] `/api/chat/google` → `/pico/v1/chat/google`
+- [ ] `/api/chat/anthropic` → `/pico/v1/chat/anthropic`
+- [ ] `/api/chat/mistral` → `/pico/v1/chat/mistral`
+- [ ] `/api/chat/groq` → `/pico/v1/chat/groq`
+- [ ] `/api/chat/perplexity` → `/pico/v1/chat/perplexity`
 
-## API Routes to Create
+#### Database Entity Endpoints (Supabase Auto-Generated REST API)
+These are handled through Supabase's auto-generated REST API, not custom Next.js routes:
 
-### Database API Endpoints
-- [ ] `app/api/db/assistants/route.ts` - Assistant CRUD API
-- [ ] `app/api/db/files/route.ts` - File management API
-- [ ] `app/api/db/tools/route.ts` - Tool CRUD API
-- [ ] `app/api/db/models/route.ts` - Model management API
-- [ ] `app/api/db/presets/route.ts` - Preset CRUD API
-- [ ] `app/api/db/prompts/route.ts` - Prompt CRUD API
-- [ ] `app/api/db/workspaces/route.ts` - Workspace API
-- [ ] `app/api/db/chats/route.ts` - Chat CRUD API
-- [ ] `app/api/db/messages/route.ts` - Message CRUD API
-- [ ] `app/api/db/collections/route.ts` - Collection CRUD API
-- [ ] `app/api/db/folders/route.ts` - Folder CRUD API
-- [ ] `app/api/db/assistant-tools/route.ts` - Assistant-tool relationships API
-- [ ] `app/api/db/assistant-files/route.ts` - Assistant-file relationships API
-- [ ] `app/api/db/assistant-collections/route.ts` - Assistant-collection relationships API
-- [ ] `app/api/db/collection-files/route.ts` - Collection-file relationships API
-- [ ] `app/api/db/message-file-items/route.ts` - Message-file relationships API
+**Core Entities:**
+- [ ] `/api/db/assistants` → `/pico/v1/db/assistants` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/chats` → `/pico/v1/db/chats` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/collections` → `/pico/v1/db/collections` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/files` → `/pico/v1/db/files` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/folders` → `/pico/v1/db/folders` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/models` → `/pico/v1/db/models` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/presets` → `/pico/v1/db/presets` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/prompts` → `/pico/v1/db/prompts` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/tools` → `/pico/v1/db/tools` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/workspaces` → `/pico/v1/db/workspaces` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/messages` → `/pico/v1/db/messages` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/profiles` → `/pico/v1/db/profiles` (GET, POST, PUT, DELETE)
 
-### Storage API Endpoints
-- [ ] `app/api/storage/upload/route.ts` - File upload API
-- [ ] `app/api/storage/remove/route.ts` - File deletion API
-- [ ] `app/api/storage/signed-url/route.ts` - Signed URL generation API
+**Relationship Tables:**
+- [ ] `/api/db/assistant-tools` → `/pico/v1/db/assistant-tools` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/assistant-files` → `/pico/v1/db/assistant-files` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/assistant-collections` → `/pico/v1/db/assistant-collections` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/collection-files` → `/pico/v1/db/collection-files` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/message-file-items` → `/pico/v1/db/message-file-items` (GET, POST, PUT, DELETE)
+- [ ] `/api/db/chat-files` → `/pico/v1/db/chat-files` (GET, POST, PUT, DELETE)
 
-## Components to Update
+**Storage Operations:**
+- [ ] `/api/storage/upload` → `/pico/v1/storage/upload` (POST)
+- [ ] `/api/storage/remove` → `/pico/v1/storage/remove` (DELETE)
+- [ ] `/api/storage/signed-url` → `/pico/v1/storage/signed-url` (POST)
 
-### Authentication Components
-- [ ] `components/utility/change-password.tsx` - Update to use new auth client
-- [ ] `components/utility/profile-settings.tsx` - Update profile management
-- [ ] `components/utility/global-state.tsx` - Update state management
+#### File Processing Endpoints
+- [ ] `/api/retrieval/process` → `/pico/v1/retrieval/process`
+- [ ] `/api/retrieval/process/docx` → `/pico/v1/retrieval/process/docx`
+- [ ] `/api/retrieval/retrieve` → `/pico/v1/retrieval/retrieve`
 
-### Chat Components
-- [ ] `components/chat/chat-hooks/use-chat-handler.tsx` - Update chat operations
-- [ ] `components/chat/chat-hooks/use-chat-history.tsx` - Update history management
-- [ ] `components/chat/chat-hooks/use-prompt-and-command.tsx` - Update prompt handling
+#### Utility Endpoints
+- [ ] `/api/command` → `/pico/v1/command`
+- [ ] `/api/keys` → `/pico/v1/keys`
+- [ ] `/api/username/available` → `/pico/v1/username/available`
+- [ ] `/api/username/get` → `/pico/v1/username/get`
 
-### Sidebar Components
-- [ ] `components/sidebar/items/assistants/assistant-item.tsx` - Update assistant operations
-- [ ] `components/sidebar/items/chat/chat-item.tsx` - Update chat operations
-- [ ] `components/sidebar/items/files/file-item.tsx` - Update file operations
-- [ ] `components/sidebar/items/folders/folder-item.tsx` - Update folder operations
-- [ ] `components/sidebar/items/presets/preset-item.tsx` - Update preset operations
-- [ ] `components/sidebar/items/prompts/prompt-item.tsx` - Update prompt operations
-- [ ] `components/sidebar/items/tools/tool-item.tsx` - Update tool operations
+### Step 3: Environment Configuration
+Map environment variables from Next.js to Swift server:
 
-## Type Definitions to Update
+**Database Configuration:**
+- [ ] `DATABASE_URL` → Swift database connection string
+- [ ] `SUPABASE_URL` → Remove (no longer needed)
+- [ ] `SUPABASE_ANON_KEY` → Remove (no longer needed)
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` → Remove (no longer needed)
 
-### Remove Supabase Types
-- [ ] Remove `@/supabase/types` imports from all files
-- [ ] Update type definitions to use generic types instead of Supabase-specific types
-- [ ] Update `TablesInsert`, `TablesUpdate`, `Tables` type references
+**API Keys:**
+- [ ] `OPENAI_API_KEY` → Swift environment variable
+- [ ] `ANTHROPIC_API_KEY` → Swift environment variable
+- [ ] `GOOGLE_GEMINI_API_KEY` → Swift environment variable
+- [ ] `MISTRAL_API_KEY` → Swift environment variable
+- [ ] `GROQ_API_KEY` → Swift environment variable
+- [ ] `PERPLEXITY_API_KEY` → Swift environment variable
+- [ ] `AZURE_OPENAI_API_KEY` → Swift environment variable
 
-### Update Import Statements
-- [ ] Replace `import { supabase } from "@/lib/supabase/browser-client"` with `import { dbClient } from "@/lib/db/client"`
-- [ ] Replace `import { createClient } from "@/lib/supabase/server"` with appropriate server-side calls
-- [ ] Update all database operation calls to use the new client
+**Ollama Configuration:**
+- [ ] `NEXT_PUBLIC_OLLAMA_URL` → Swift Ollama server URL
 
-## Configuration Updates
+**Application Configuration:**
+- [ ] `NEXT_PUBLIC_API_URL` → Remove (frontend will use relative URLs)
+- [ ] `NEXT_PUBLIC_OPENAI_ORGANIZATION_ID` → Swift environment variable
+- [ ] `NEXT_PUBLIC_USER_FILE_SIZE_LIMIT` → Swift file size limit
 
-### Environment Variables
-- [ ] Update `.env.local.example` to remove Supabase variables
-- [ ] Add new API URL configuration
-- [ ] Update deployment documentation
+### Step 4: Remove Server-Side Code
+- [ ] Remove all `/app/api/` route files
+- [ ] Remove server-side database files
+- [ ] Remove Supabase dependencies
+- [ ] Configure Next.js for static export only
 
-### Package.json Scripts
-- [ ] Remove Supabase-related scripts (already done)
-- [ ] Update development scripts to reflect new setup
+### Step 5: Test Frontend
+- [ ] Verify all API calls work with `/pico/v1/` endpoints
+- [ ] Test static build and export
+- [ ] Verify no server-side dependencies remain
 
-## Testing and Validation
+### Step 6: Prepare Swift Server
+- [ ] Verify that and potentially fix build script is executed in Package.swift
+- [ ] Make sure the static export is either copied or saved directly in `Sources/PicoChatUI/build`
 
-### Authentication Testing
-- [ ] Test login functionality
-- [ ] Test signup functionality
-- [ ] Test session management
-- [ ] Test logout functionality
+## Phase 2: Swift Server Implementation
 
-### Database Testing
-- [ ] Test CRUD operations for all entities
-- [ ] Test file upload and storage
-- [ ] Test relationship management
-- [ ] Test error handling
+### Step 1: Basic Server Setup
+- [ ] Set up Hummingbird 2.0 server
+- [ ] Configure static file serving from `out/` directory
+- [ ] Set up basic routing structure
+- [ ] Configure environment variables
 
-### Integration Testing
-- [ ] Test chat functionality with new database
-- [ ] Test file processing with new storage
-- [ ] Test user profile management
-- [ ] Test workspace management
+### Step 2: Authentication Endpoints
+- [ ] Implement `/pico/v1/auth/login` (POST)
+- [ ] Implement `/pico/v1/auth/logout` (POST)
+- [ ] Implement `/pico/v1/auth/signup` (POST)
+- [ ] Implement `/pico/v1/auth/session` (GET)
 
-## Backend Implementation
+### Step 3: Chat Endpoints
+- [ ] Implement `/pico/v1/chat/custom` (POST)
+- [ ] Implement `/pico/v1/chat/azure` (POST)
+- [ ] Implement `/pico/v1/chat/google` (POST)
+- [ ] Implement `/pico/v1/chat/anthropic` (POST)
+- [ ] Implement `/pico/v1/chat/mistral` (POST)
+- [ ] Implement `/pico/v1/chat/groq` (POST)
+- [ ] Implement `/pico/v1/chat/perplexity` (POST)
 
-### Database Backend
-- [ ] Implement actual database backend (currently using mock data)
-- [ ] Set up proper session management
-- [ ] Implement proper error handling
-- [ ] Add data validation
+### Step 4: Database Entity Endpoints
+Implement CRUD operations for all entities with Supabase-compatible API:
 
-### Storage Backend
-- [ ] Implement file storage system
+**Core Entities:**
+- [ ] `/pico/v1/db/assistants` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/chats` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/collections` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/files` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/folders` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/models` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/presets` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/prompts` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/tools` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/workspaces` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/messages` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/profiles` (GET, POST, PUT, DELETE)
+
+**Relationship Tables:**
+- [ ] `/pico/v1/db/assistant-tools` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/assistant-files` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/assistant-collections` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/collection-files` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/message-file-items` (GET, POST, PUT, DELETE)
+- [ ] `/pico/v1/db/chat-files` (GET, POST, PUT, DELETE)
+
+### Step 5: Storage Endpoints
+- [ ] Implement `/pico/v1/storage/upload` (POST)
+- [ ] Implement `/pico/v1/storage/remove` (DELETE)
+- [ ] Implement `/pico/v1/storage/signed-url` (POST)
+
+### Step 6: File Processing Endpoints
+- [ ] Implement `/pico/v1/retrieval/process` (POST)
+- [ ] Implement `/pico/v1/retrieval/process/docx` (POST)
+- [ ] Implement `/pico/v1/retrieval/retrieve` (POST)
+
+### Step 7: Utility Endpoints
+- [ ] Implement `/pico/v1/command` (POST)
+- [ ] Implement `/pico/v1/keys` (GET, POST)
+- [ ] Implement `/pico/v1/username/available` (GET)
+- [ ] Implement `/pico/v1/username/get` (GET)
+
+## Phase 3: Integration and Testing
+
+### Step 1: Database Integration
+- [ ] Set up database schema in Swift
+- [ ] Implement data models
+- [ ] Add database migrations
+- [ ] Test all CRUD operations
+
+### Step 2: File Storage
+- [ ] Implement file upload handling
+- [ ] Set up local file storage
+- [ ] Implement file processing
 - [ ] Add file type validation
-- [ ] Implement file size limits
+
+### Step 3: Authentication
+- [ ] Implement session management
+- [ ] Add user authentication
+- [ ] Implement password hashing
 - [ ] Add security measures
 
-## Documentation Updates
-
-### Code Documentation
-- [ ] Update inline comments to reflect new architecture
-- [ ] Add JSDoc comments for new functions
-- [ ] Update API documentation
-
-### User Documentation
-- [ ] Update setup instructions
-- [ ] Update deployment guide
-- [ ] Update troubleshooting guide
-
-## Priority Order
-
-### High Priority (Core Functionality)
-1. Update all database files in `db/` directory
-2. Create essential API endpoints
-3. Update authentication components
-4. Test basic functionality
-
-### Medium Priority (Features)
-1. Update chat and sidebar components
-2. Implement storage functionality
-3. Update type definitions
-4. Add error handling
-
-### Low Priority (Polish)
-1. Update documentation
-2. Add comprehensive testing
-3. Optimize performance
-4. Add advanced features
+### Step 4: Testing
+- [ ] Test all endpoints with frontend
+- [ ] Test file upload and processing
+- [ ] Test chat functionality
+- [ ] Test user management
 
 ## Notes
 
-- The new system uses localhost API endpoints instead of direct database calls
-- Authentication is now cookie-based instead of JWT tokens
-- File storage is handled through API endpoints instead of direct Supabase storage
-- All database operations should be implemented as REST API endpoints
-- The current implementation uses mock data - real backend implementation is needed 
+- All API calls will be to `/pico/v1/*` endpoints
+- Swift server will serve static files from the exported Next.js build
+- No need for CORS since same origin
+- Focus on 1:1 conversion from Next.js API routes to Swift endpoints
+- Start with frontend conversion, then implement Swift server step by step
+- Database entities use Supabase-compatible REST API patterns
+- Environment variables need to be mapped from Next.js to Swift configuration 
