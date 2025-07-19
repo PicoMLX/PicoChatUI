@@ -109,20 +109,18 @@ export const usePromptAndCommand = () => {
     )
 
     setNewMessageFiles(prev => {
-      const newFiles =
-        (collectionFiles as any).files ||
-        []
-          .filter(
-            (file: any) =>
-              !prev.some(prevFile => prevFile.id === file.id) &&
-              !chatFiles.some(chatFile => chatFile.id === file.id)
-          )
-          .map((file: any) => ({
-            id: file.id,
-            name: file.name,
-            type: file.type,
-            file: null
-          }))
+      const newFiles = ((collectionFiles as any).files || [])
+        .filter(
+          (file: any) =>
+            !prev.some(prevFile => prevFile.id === file.id) &&
+            !chatFiles.some(chatFile => chatFile.id === file.id)
+        )
+        .map((file: any) => ({
+          id: file.id,
+          name: file.name,
+          type: file.type,
+          file: null
+        }))
 
       return [...prev, ...newFiles]
     })
