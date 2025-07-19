@@ -46,6 +46,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
         user_id: assistant.user_id,
         workspace_id: selectedWorkspace.id,
         assistant_id: assistant.id,
+        folder_id: null,
         context_length: assistant.context_length,
         include_profile_context: assistant.include_profile_context,
         include_workspace_instructions:

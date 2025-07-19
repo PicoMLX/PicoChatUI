@@ -72,7 +72,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
 
       setLoading(true)
 
-      const response = await fetch(`/api/username/available`, {
+      const response = await fetch(`/pico/v1/username/available`, {
         method: "POST",
         body: JSON.stringify({ username })
       })

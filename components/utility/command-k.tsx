@@ -20,7 +20,7 @@ export const CommandK: FC<CommandKProps> = ({}) => {
   const handleCommandK = async () => {
     setLoading(true)
 
-    const response = await fetch("/api/command", {
+    const response = await fetch("/pico/v1/command", {
       method: "POST",
       body: JSON.stringify({
         input: value

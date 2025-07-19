@@ -9,7 +9,10 @@ const withPWA = require("next-pwa")({
 module.exports = withBundleAnalyzer(
   withPWA({
     reactStrictMode: true,
+    output: 'export',
+    trailingSlash: true,
     images: {
+      unoptimized: true,
       remotePatterns: [
         {
           protocol: "http",
@@ -25,6 +28,6 @@ module.exports = withBundleAnalyzer(
         }
       ]
     },
-    serverExternalPackages: ["sharp", "onnxruntime-node"]
+
   })
 )

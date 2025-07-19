@@ -89,7 +89,7 @@ export const DeleteFolder: FC<DeleteFolderProps> = ({
       .eq("folder_id", folder.id)
 
     if (error) {
-      toast.error(error.message)
+      toast.error((error as any)?.message || "An error occurred")
     }
 
     setStateFunction((prevItems: any) =>

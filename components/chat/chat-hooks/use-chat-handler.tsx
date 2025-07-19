@@ -113,22 +113,25 @@ export const useChatHandler = () => {
 
       let allFiles = []
 
-      const assistantFiles = (
-        await getAssistantFilesByAssistantId(selectedAssistant.id)
-      ).files
+      const assistantFiles =
+        ((await getAssistantFilesByAssistantId(selectedAssistant.id)) as any)
+          .files || []
       allFiles = [...assistantFiles]
-      const assistantCollections = (
-        await getAssistantCollectionsByAssistantId(selectedAssistant.id)
-      ).collections
+      const assistantCollections =
+        (
+          (await getAssistantCollectionsByAssistantId(
+            selectedAssistant.id
+          )) as any
+        ).collections || []
       for (const collection of assistantCollections) {
-        const collectionFiles = (
-          await getCollectionFilesByCollectionId(collection.id)
-        ).files
+        const collectionFiles =
+          ((await getCollectionFilesByCollectionId(collection.id)) as any)
+            .files || []
         allFiles = [...allFiles, ...collectionFiles]
       }
-      const assistantTools = (
-        await getAssistantToolsByAssistantId(selectedAssistant.id)
-      ).tools
+      const assistantTools =
+        ((await getAssistantToolsByAssistantId(selectedAssistant.id)) as any)
+          .tools || []
 
       setSelectedTools(assistantTools)
       setChatFiles(
@@ -322,6 +325,10 @@ export const useChatHandler = () => {
 
           return updatedChats
         })
+      }
+
+      if (!currentChat) {
+        throw new Error("Failed to create or get chat")
       }
 
       await handleCreateMessages(

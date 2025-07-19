@@ -54,6 +54,7 @@ export const CreateCollection: FC<CreateCollectionProps> = ({
             file_id: file.id
           })),
           user_id: profile.user_id,
+          folder_id: null,
           name,
           description
         } as TablesInsert<"collections">

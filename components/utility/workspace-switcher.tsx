@@ -59,6 +59,8 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
       include_workspace_instructions:
         selectedWorkspace.include_workspace_instructions,
       instructions: selectedWorkspace.instructions,
+      image_url: "",
+      image_path: "",
       is_home: false,
       name: "New Workspace"
     })

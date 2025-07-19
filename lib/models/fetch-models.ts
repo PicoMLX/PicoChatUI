@@ -8,7 +8,7 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
     // Only support Ollama for hosted models
     const providers = ["ollama"]
 
-    const response = await fetch("/api/keys")
+    const response = await fetch("/pico/v1/keys")
 
     if (!response.ok) {
       throw new Error(`Server is not responding.`)

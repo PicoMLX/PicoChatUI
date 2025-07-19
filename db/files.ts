@@ -134,7 +134,7 @@ export const createFile = async (
   formData.append("file_id", createdFile.id)
   formData.append("embeddingsProvider", embeddingsProvider)
 
-  const response = await fetch("/api/retrieval/process", {
+  const response = await fetch("/pico/v1/retrieval/process", {
     method: "POST",
     body: formData
   })
@@ -190,7 +190,7 @@ export const createDocXFile = async (
     file_path: filePath
   })
 
-  const response = await fetch("/api/retrieval/process/docx", {
+  const response = await fetch("/pico/v1/retrieval/process/docx", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

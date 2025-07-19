@@ -41,7 +41,7 @@ Fill in your environment variables in the `.env.local` file:
 
 ```env
 # API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
+NEXT_PUBLIC_API_URL=http://localhost:3000/pico/v1
 
 # Ollama
 NEXT_PUBLIC_OLLAMA_URL=http://localhost:11434
@@ -86,10 +86,10 @@ The application will be available at `http://localhost:3000`.
 
 This application uses a localhost-based authentication system. The authentication endpoints are:
 
-- `POST /api/auth/login` - User login
-- `POST /api/auth/signup` - User registration  
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/session` - Get current session
+- `POST /pico/v1/auth/login` - User login
+- `POST /pico/v1/auth/signup` - User registration  
+- `POST /pico/v1/auth/logout` - User logout
+- `GET /pico/v1/auth/session` - Get current session
 
 ## Database
 

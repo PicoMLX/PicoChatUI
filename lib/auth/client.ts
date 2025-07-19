@@ -4,7 +4,7 @@ export class AuthClient {
 
   constructor() {
     this.baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/pico/v1"
   }
 
   async signInWithPassword({

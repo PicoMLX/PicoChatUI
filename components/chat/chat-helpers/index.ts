@@ -58,7 +58,7 @@ export const handleRetrieval = async (
   embeddingsProvider: "local",
   sourceCount: number
 ) => {
-  const response = await fetch("/api/retrieval/retrieve", {
+  const response = await fetch("/pico/v1/retrieval/retrieve", {
     method: "POST",
     body: JSON.stringify({
       userInput,
@@ -204,7 +204,7 @@ export const handleCustomChat = async (
   let draftMessages = await buildFinalMessages(payload, profile, chatImages)
   let formattedMessages = draftMessages
 
-  const apiEndpoint = "/api/chat/custom"
+  const apiEndpoint = "/pico/v1/chat/custom"
 
   const requestBody = {
     chatSettings: payload.chatSettings,
@@ -346,6 +346,7 @@ export const handleCreateChat = async (
     user_id: profile.user_id,
     workspace_id: selectedWorkspace.id,
     assistant_id: selectedAssistant?.id || null,
+    folder_id: null,
     context_length: chatSettings.contextLength,
     include_profile_context: chatSettings.includeProfileContext,
     include_workspace_instructions: chatSettings.includeWorkspaceInstructions,
