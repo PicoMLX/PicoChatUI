@@ -176,4 +176,22 @@ This document lists all files that still need to be updated to complete the remo
 - Authentication is now cookie-based instead of JWT tokens
 - File storage is handled through API endpoints instead of direct Supabase storage
 - All database operations should be implemented as REST API endpoints
-- The current implementation uses mock data - real backend implementation is needed 
+- The current implementation uses mock data - real backend implementation is needed
+
+## Questions for Later Investigation
+
+### Static Export and Database Calls During Build
+**Issue**: During Next.js static export build, TypeScript errors occur because API responses return `{}` instead of expected objects with proper properties.
+
+**Question**: How did the original Supabase setup handle database calls during static export? Was there:
+1. Build-time mocking mechanism?
+2. Conditional logic to skip API calls during build?
+3. Some other approach to prevent these calls during static generation?
+
+**Current Status**: Added minimal `(as any)` type assertions to resolve immediate build errors, but this is a temporary workaround. Need to understand the proper long-term solution.
+
+**Related Files**:
+- `components/chat/chat-ui.tsx`
+- `components/chat/chat-hooks/use-select-file-handler.tsx`
+- `components/chat/quick-settings.tsx`
+- Others that make API calls during component initialization 

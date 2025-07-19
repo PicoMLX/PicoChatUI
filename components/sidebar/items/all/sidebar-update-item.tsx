@@ -207,16 +207,18 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     collections: async (collectionId: string) => {
       const collectionFiles =
         await getCollectionFilesByCollectionId(collectionId)
-      setStartingCollectionFiles(collectionFiles.files)
+      setStartingCollectionFiles((collectionFiles as any).files || [])
       setSelectedCollectionFiles([])
     },
     assistants: async (assistantId: string) => {
       const assistantFiles = await getAssistantFilesByAssistantId(assistantId)
-      setStartingAssistantFiles(assistantFiles.files)
+      setStartingAssistantFiles((assistantFiles as any).files || [])
 
       const assistantCollections =
         await getAssistantCollectionsByAssistantId(assistantId)
-      setStartingAssistantCollections(assistantCollections.collections)
+      setStartingAssistantCollections(
+        (assistantCollections as any).collections || []
+      )
 
       const assistantTools = await getAssistantToolsByAssistantId(assistantId)
       setStartingAssistantTools(assistantTools.tools)

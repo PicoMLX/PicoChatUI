@@ -68,20 +68,20 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
       setSelectedAssistant(item as Tables<"assistants">)
       setLoading(true)
       let allFiles = []
-      const assistantFiles = (await getAssistantFilesByAssistantId(item.id))
-        .files
+      const assistantFiles =
+        ((await getAssistantFilesByAssistantId(item.id)) as any).files || []
       allFiles = [...assistantFiles]
-      const assistantCollections = (
-        await getAssistantCollectionsByAssistantId(item.id)
-      ).collections
+      const assistantCollections =
+        ((await getAssistantCollectionsByAssistantId(item.id)) as any)
+          .collections || []
       for (const collection of assistantCollections) {
-        const collectionFiles = (
-          await getCollectionFilesByCollectionId(collection.id)
-        ).files
+        const collectionFiles =
+          ((await getCollectionFilesByCollectionId(collection.id)) as any)
+            .files || []
         allFiles = [...allFiles, ...collectionFiles]
       }
-      const assistantTools = (await getAssistantToolsByAssistantId(item.id))
-        .tools
+      const assistantTools =
+        ((await getAssistantToolsByAssistantId(item.id)) as any).tools || []
       setSelectedTools(assistantTools)
       setChatFiles(
         allFiles.map(file => ({
