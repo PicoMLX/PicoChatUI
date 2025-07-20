@@ -29,40 +29,104 @@ export class DatabaseClient {
     const self = this
     return {
       select: (columns: string = "*") => ({
-        eq: (column: string, value: any) => ({
-          single: async () => {
-            const result = await self.request(
-              `/db/${table}?select=${columns}&eq=${column}:${value}&single=true`
-            )
-            return { data: result }
+        eq: (column: string, value: any) => {
+          const queryBuilder = {
+            single: async () => {
+              try {
+                const result = await self.request(
+                  `/db/${table}?select=${columns}&eq=${column}:${value}&single=true`
+                )
+                return result
+              } catch (error) {
+                throw error
+              }
+            },
+            async execute() {
+              try {
+                const result = await self.request(
+                  `/db/${table}?select=${columns}&eq=${column}:${value}`
+                )
+                return result
+              } catch (error) {
+                throw error
+              }
+            },
+            async then(resolve: any, reject: any) {
+              try {
+                const result = await self.request(
+                  `/db/${table}?select=${columns}&eq=${column}:${value}`
+                )
+                resolve(result)
+              } catch (error) {
+                reject(error)
+              }
+            }
           }
-        })
+
+          return queryBuilder
+        }
       }),
       insert: (data: any) => ({
-        select: (columns: string = "*") => ({
-          single: async () => {
-            const result = await self.request(`/db/${table}`, {
-              method: "POST",
-              body: JSON.stringify({ data, select: columns, single: true })
-            })
-            return { data: result }
+        select: (columns: string = "*") => {
+          const insertBuilder = {
+            single: async () => {
+              try {
+                const result = await self.request(`/db/${table}`, {
+                  method: "POST",
+                  body: JSON.stringify({ data, select: columns, single: true })
+                })
+                return result
+              } catch (error) {
+                throw error
+              }
+            },
+            async then(resolve: any, reject: any) {
+              try {
+                const result = await self.request(`/db/${table}`, {
+                  method: "POST",
+                  body: JSON.stringify({ data, select: columns })
+                })
+                resolve(result)
+              } catch (error) {
+                reject(error)
+              }
+            }
           }
-        })
+
+          // Make the insertBuilder awaitable by adding a then method
+          return Object.assign(insertBuilder, {
+            then: async function (resolve: any, reject: any) {
+              try {
+                const result = await self.request(`/db/${table}`, {
+                  method: "POST",
+                  body: JSON.stringify({ data, select: columns })
+                })
+                resolve(result)
+              } catch (error) {
+                reject(error)
+              }
+            }
+          })
+        }
       }),
       update: (data: any) => ({
         eq: (column: string, value: any) => ({
           select: (columns: string = "*") => ({
             single: async () => {
-              const result = await self.request(`/db/${table}`, {
-                method: "PUT",
-                body: JSON.stringify({
-                  data,
-                  eq: { column, value },
-                  select: columns,
-                  single: true
+              try {
+                const result = await self.request(`/db/${table}`, {
+                  method: "PUT",
+                  body: JSON.stringify({
+                    data,
+                    eq: { column, value },
+                    select: columns,
+                    single: true
+                  })
                 })
-              })
-              return { data: result }
+                return result
+              } catch (error) {
+                throw error
+              }
             }
           })
         })
@@ -70,10 +134,15 @@ export class DatabaseClient {
       delete: () => ({
         eq: (column: string, value: any) => ({
           async execute() {
-            return self.request(`/db/${table}`, {
-              method: "DELETE",
-              body: JSON.stringify({ eq: { column, value } })
-            })
+            try {
+              await self.request(`/db/${table}`, {
+                method: "DELETE",
+                body: JSON.stringify({ eq: { column, value } })
+              })
+              return { error: null }
+            } catch (error) {
+              return { error }
+            }
           }
         })
       })
