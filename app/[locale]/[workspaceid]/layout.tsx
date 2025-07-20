@@ -15,6 +15,18 @@ import { getToolWorkspacesByWorkspaceId } from "@/db/tools"
 import { getWorkspaceById } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { supabase } from "@/lib/supabase/browser-client"
+import {
+  WorkspaceRow,
+  AssistantRow,
+  CollectionRow,
+  FolderRow,
+  FileRow,
+  PresetRow,
+  PromptRow,
+  ToolRow,
+  ModelRow,
+  ChatRow
+} from "@/supabase/types"
 import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ReactNode, useContext, useEffect, useState } from "react"
@@ -91,13 +103,17 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const fetchWorkspaceData = async (workspaceId: string) => {
     setLoading(true)
 
-    const workspace = await getWorkspaceById(workspaceId)
+    const { data: workspace } = (await getWorkspaceById(workspaceId)) as {
+      data: WorkspaceRow
+    }
     setSelectedWorkspace(workspace)
 
-    const assistantData = await getAssistantWorkspacesByWorkspaceId(workspaceId)
-    setAssistants(assistantData.assistants)
+    const { data: assistantData } = (await getAssistantWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { data: { assistants: AssistantRow[] } }
+    setAssistants(assistantData.assistants || [])
 
-    for (const assistant of assistantData.assistants) {
+    for (const assistant of assistantData.assistants || []) {
       let url = ""
 
       if (assistant.image_path) {
@@ -131,30 +147,48 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
       }
     }
 
-    const chats = await getChatsByWorkspaceId(workspaceId)
+    const chats = (await getChatsByWorkspaceId(workspaceId)) as ChatRow[]
     setChats(chats)
 
-    const collectionData =
-      await getCollectionWorkspacesByWorkspaceId(workspaceId)
-    setCollections(collectionData.collections)
+    const { data: collectionData } =
+      (await getCollectionWorkspacesByWorkspaceId(workspaceId)) as {
+        data: { collections: CollectionRow[] }
+      }
+    setCollections(collectionData.collections || [])
 
-    const folders = await getFoldersByWorkspaceId(workspaceId)
-    setFolders(folders)
+    const folders = (await getFoldersByWorkspaceId(workspaceId)) as FolderRow[]
+    setFolders(folders || [])
 
-    const fileData = await getFileWorkspacesByWorkspaceId(workspaceId)
-    setFiles(fileData.files)
+    const { data: fileData } = (await getFileWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { files: FileRow[] }
+    }
+    setFiles(fileData.files || [])
 
-    const presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
-    setPresets(presetData.presets)
+    const { data: presetData } = (await getPresetWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { data: { presets: PresetRow[] } }
+    setPresets(presetData.presets || [])
 
-    const promptData = await getPromptWorkspacesByWorkspaceId(workspaceId)
-    setPrompts(promptData.prompts)
+    const { data: promptData } = (await getPromptWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { data: { prompts: PromptRow[] } }
+    setPrompts(promptData.prompts || [])
 
-    const toolData = await getToolWorkspacesByWorkspaceId(workspaceId)
-    setTools(toolData.tools)
+    const { data: toolData } = (await getToolWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { tools: ToolRow[] }
+    }
+    setTools(toolData.tools || [])
 
-    const modelData = await getModelWorkspacesByWorkspaceId(workspaceId)
-    setModels(modelData.models)
+    const { data: modelData } = (await getModelWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { models: ModelRow[] }
+    }
+    setModels(modelData.models || [])
 
     setChatSettings({
       model: (searchParams.get("model") ||

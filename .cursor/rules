@@ -1,0 +1,55 @@
+# Cursor Rules for TypeScript Development
+
+## Type Safety Rules
+
+### NEVER Use `any` Type Casts
+- **NEVER** add `(as any)` type casts to suppress TypeScript errors
+- **NEVER** use `any` type in function parameters, return types, or variable declarations
+- **ALWAYS** ask the user if they want to create a proper type definition instead
+
+### When TypeScript Errors Occur
+1. **First**: Identify what the correct type should be
+2. **Second**: Check if the type already exists in `supabase/types.ts` or other type files
+3. **Third**: If type doesn't exist, **ASK THE USER** if they want to create a new type
+4. **Fourth**: Only as a last resort and with explicit user permission, use minimal type assertions
+
+### Proper Type Definition Process
+1. Analyze the data structure causing the error
+2. Look for existing compatible types in the codebase
+3. Propose creating a new interface/type with proper structure
+4. Get user approval before creating new types
+5. Add the type to the appropriate file (usually `supabase/types.ts` for database-related types)
+
+### Examples of What NOT to Do
+```typescript
+// ❌ WRONG - Don't suppress errors with any
+const data = (await apiCall()) as any
+const files = data.files || []
+
+// ❌ WRONG - Don't use any in function parameters  
+function processData(data: any) { ... }
+```
+
+### Examples of What TO Do
+```typescript
+// ✅ CORRECT - Use proper types
+interface ApiResponse {
+  files: FileRow[]
+}
+const data = (await apiCall()) as ApiResponse
+const files = data.files || []
+
+// ✅ CORRECT - Ask user to create missing types
+// "I see this API returns { files: FileRow[], collections: CollectionRow[] }. 
+// Should I create a new type interface for this response structure?"
+```
+
+### Type Safety Checklist
+- [ ] No `(as any)` casts in the code
+- [ ] All function parameters have proper types
+- [ ] All return types are explicitly defined
+- [ ] API responses use proper interface definitions
+- [ ] User was consulted before creating new types
+
+## Remember
+Type safety is not optional. Every TypeScript error is pointing to a real potential runtime issue. Address the root cause, don't mask it with `any`.

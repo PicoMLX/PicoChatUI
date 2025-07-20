@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert } from "@/supabase/types"
 
 export const getChatFilesByChatId = async (chatId: string) => {
-  const { data: chatFiles, error } = await supabase
+  const chatFiles = await dbClient
     .from("chats")
     .select(
       `
@@ -15,20 +15,20 @@ export const getChatFilesByChatId = async (chatId: string) => {
     .single()
 
   if (!chatFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return chatFiles
 }
 
 export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
-  const { data: createdChatFile, error } = await supabase
+  const createdChatFile = await dbClient
     .from("chat_files")
     .insert(chatFile)
     .select("*")
 
   if (!createdChatFile) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChatFile
@@ -37,13 +37,13 @@ export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
 export const createChatFiles = async (
   chatFiles: TablesInsert<"chat_files">[]
 ) => {
-  const { data: createdChatFiles, error } = await supabase
+  const createdChatFiles = await dbClient
     .from("chat_files")
     .insert(chatFiles)
     .select("*")
 
   if (!createdChatFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChatFiles

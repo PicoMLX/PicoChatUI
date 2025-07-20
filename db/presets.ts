@@ -1,22 +1,22 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getPresetById = async (presetId: string) => {
-  const { data: preset, error } = await supabase
+  const preset = await dbClient
     .from("presets")
     .select("*")
     .eq("id", presetId)
     .single()
 
   if (!preset) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return preset
 }
 
 export const getPresetWorkspacesByWorkspaceId = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -29,14 +29,14 @@ export const getPresetWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
 }
 
 export const getPresetWorkspacesByPresetId = async (presetId: string) => {
-  const { data: preset, error } = await supabase
+  const preset = await dbClient
     .from("presets")
     .select(
       `
@@ -49,7 +49,7 @@ export const getPresetWorkspacesByPresetId = async (presetId: string) => {
     .single()
 
   if (!preset) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return preset
@@ -59,14 +59,14 @@ export const createPreset = async (
   preset: TablesInsert<"presets">,
   workspace_id: string
 ) => {
-  const { data: createdPreset, error } = await supabase
+  const createdPreset = await dbClient
     .from("presets")
     .insert([preset])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPresetWorkspace({
@@ -82,13 +82,13 @@ export const createPresets = async (
   presets: TablesInsert<"presets">[],
   workspace_id: string
 ) => {
-  const { data: createdPresets, error } = await supabase
+  const createdPresets = await dbClient
     .from("presets")
     .insert(presets)
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPresetWorkspaces(
@@ -107,14 +107,14 @@ export const createPresetWorkspace = async (item: {
   preset_id: string
   workspace_id: string
 }) => {
-  const { data: createdPresetWorkspace, error } = await supabase
+  const createdPresetWorkspace = await dbClient
     .from("preset_workspaces")
     .insert([item])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdPresetWorkspace
@@ -123,12 +123,12 @@ export const createPresetWorkspace = async (item: {
 export const createPresetWorkspaces = async (
   items: { user_id: string; preset_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdPresetWorkspaces, error } = await supabase
+  const createdPresetWorkspaces = await dbClient
     .from("preset_workspaces")
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdPresetWorkspaces
 }
@@ -137,7 +137,7 @@ export const updatePreset = async (
   presetId: string,
   preset: TablesUpdate<"presets">
 ) => {
-  const { data: updatedPreset, error } = await supabase
+  const updatedPreset = await dbClient
     .from("presets")
     .update(preset)
     .eq("id", presetId)
@@ -145,17 +145,17 @@ export const updatePreset = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedPreset
 }
 
 export const deletePreset = async (presetId: string) => {
-  const { error } = await supabase.from("presets").delete().eq("id", presetId)
+  const { error } = await dbClient.from("presets").delete().eq("id", presetId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -165,13 +165,13 @@ export const deletePresetWorkspace = async (
   presetId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("preset_workspaces")
     .delete()
     .eq("preset_id", presetId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

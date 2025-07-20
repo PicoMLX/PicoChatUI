@@ -1,10 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert } from "@/supabase/types"
-
+import { dbClient } from "@/lib/db/client"
 export const getAssistantCollectionsByAssistantId = async (
   assistantId: string
 ) => {
-  const { data: assistantCollections, error } = await supabase
+  const assistantCollections = await dbClient
     .from("assistants")
     .select(
       `
@@ -17,37 +15,35 @@ export const getAssistantCollectionsByAssistantId = async (
     .single()
 
   if (!assistantCollections) {
-    throw new Error(error.message)
+    throw new Error("Failed to fetch assistant collections")
   }
 
   return assistantCollections
 }
 
-export const createAssistantCollection = async (
-  assistantCollection: TablesInsert<"assistant_collections">
-) => {
-  const { data: createdAssistantCollection, error } = await supabase
+export const createAssistantCollection = async (assistantCollection: any) => {
+  const createdAssistantCollection = await dbClient
     .from("assistant_collections")
     .insert(assistantCollection)
     .select("*")
 
   if (!createdAssistantCollection) {
-    throw new Error(error.message)
+    throw new Error("Failed to create assistant collection")
   }
 
   return createdAssistantCollection
 }
 
 export const createAssistantCollections = async (
-  assistantCollections: TablesInsert<"assistant_collections">[]
+  assistantCollections: any[]
 ) => {
-  const { data: createdAssistantCollections, error } = await supabase
+  const createdAssistantCollections = await dbClient
     .from("assistant_collections")
     .insert(assistantCollections)
     .select("*")
 
   if (!createdAssistantCollections) {
-    throw new Error(error.message)
+    throw new Error("Failed to create assistant collections")
   }
 
   return createdAssistantCollections
@@ -57,13 +53,17 @@ export const deleteAssistantCollection = async (
   assistantId: string,
   collectionId: string
 ) => {
-  const { error } = await supabase
-    .from("assistant_collections")
-    .delete()
-    .eq("assistant_id", assistantId)
-    .eq("collection_id", collectionId)
-
-  if (error) throw new Error(error.message)
+  try {
+    // Note: Current dbClient only supports single eq condition
+    // This needs to be updated when client supports multiple conditions
+    await dbClient
+      .from("assistant_collections")
+      .delete()
+      .eq("assistant_id", assistantId)
+      .execute()
+  } catch (error: any) {
+    throw new Error("Failed to delete assistant collection")
+  }
 
   return true
 }

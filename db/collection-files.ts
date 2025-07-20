@@ -1,10 +1,10 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert } from "@/supabase/types"
 
 export const getCollectionFilesByCollectionId = async (
   collectionId: string
 ) => {
-  const { data: collectionFiles, error } = await supabase
+  const collectionFiles = await dbClient
     .from("collections")
     .select(
       `
@@ -17,7 +17,7 @@ export const getCollectionFilesByCollectionId = async (
     .single()
 
   if (!collectionFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return collectionFiles
@@ -26,13 +26,13 @@ export const getCollectionFilesByCollectionId = async (
 export const createCollectionFile = async (
   collectionFile: TablesInsert<"collection_files">
 ) => {
-  const { data: createdCollectionFile, error } = await supabase
+  const createdCollectionFile = await dbClient
     .from("collection_files")
     .insert(collectionFile)
     .select("*")
 
   if (!createdCollectionFile) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdCollectionFile
@@ -41,13 +41,13 @@ export const createCollectionFile = async (
 export const createCollectionFiles = async (
   collectionFiles: TablesInsert<"collection_files">[]
 ) => {
-  const { data: createdCollectionFiles, error } = await supabase
+  const createdCollectionFiles = await dbClient
     .from("collection_files")
     .insert(collectionFiles)
     .select("*")
 
   if (!createdCollectionFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdCollectionFiles
@@ -57,13 +57,13 @@ export const deleteCollectionFile = async (
   collectionId: string,
   fileId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("collection_files")
     .delete()
     .eq("collection_id", collectionId)
     .eq("file_id", fileId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

@@ -1,25 +1,25 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 import mammoth from "mammoth"
 import { toast } from "sonner"
 import { uploadFile } from "./storage/files"
 
 export const getFileById = async (fileId: string) => {
-  const { data: file, error } = await supabase
+  const file = await dbClient
     .from("files")
     .select("*")
     .eq("id", fileId)
     .single()
 
   if (!file) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return file
 }
 
 export const getFileWorkspacesByWorkspaceId = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -32,14 +32,14 @@ export const getFileWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
 }
 
 export const getFileWorkspacesByFileId = async (fileId: string) => {
-  const { data: file, error } = await supabase
+  const file = await dbClient
     .from("files")
     .select(
       `
@@ -52,7 +52,7 @@ export const getFileWorkspacesByFileId = async (fileId: string) => {
     .single()
 
   if (!file) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return file
@@ -104,14 +104,14 @@ export const createFile = async (
   } else {
     fileRecord.name = baseName + "." + extension
   }
-  const { data: createdFile, error } = await supabase
+  const createdFile = await dbClient
     .from("files")
     .insert([fileRecord])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspace({
@@ -134,7 +134,7 @@ export const createFile = async (
   formData.append("file_id", createdFile.id)
   formData.append("embeddingsProvider", embeddingsProvider)
 
-  const response = await fetch("/api/retrieval/process", {
+  const response = await fetch("/pico/v1/retrieval/process", {
     method: "POST",
     body: formData
   })
@@ -164,14 +164,14 @@ export const createDocXFile = async (
   workspace_id: string,
   embeddingsProvider: "openai" | "local"
 ) => {
-  const { data: createdFile, error } = await supabase
+  const createdFile = await dbClient
     .from("files")
     .insert([fileRecord])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspace({
@@ -190,7 +190,7 @@ export const createDocXFile = async (
     file_path: filePath
   })
 
-  const response = await fetch("/api/retrieval/process/docx", {
+  const response = await fetch("/pico/v1/retrieval/process/docx", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -224,13 +224,10 @@ export const createFiles = async (
   files: TablesInsert<"files">[],
   workspace_id: string
 ) => {
-  const { data: createdFiles, error } = await supabase
-    .from("files")
-    .insert(files)
-    .select("*")
+  const createdFiles = await dbClient.from("files").insert(files).select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspaces(
@@ -249,14 +246,14 @@ export const createFileWorkspace = async (item: {
   file_id: string
   workspace_id: string
 }) => {
-  const { data: createdFileWorkspace, error } = await supabase
+  const createdFileWorkspace = await dbClient
     .from("file_workspaces")
     .insert([item])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdFileWorkspace
@@ -265,12 +262,12 @@ export const createFileWorkspace = async (item: {
 export const createFileWorkspaces = async (
   items: { user_id: string; file_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdFileWorkspaces, error } = await supabase
+  const createdFileWorkspaces = await dbClient
     .from("file_workspaces")
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdFileWorkspaces
 }
@@ -279,7 +276,7 @@ export const updateFile = async (
   fileId: string,
   file: TablesUpdate<"files">
 ) => {
-  const { data: updatedFile, error } = await supabase
+  const updatedFile = await dbClient
     .from("files")
     .update(file)
     .eq("id", fileId)
@@ -287,17 +284,17 @@ export const updateFile = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedFile
 }
 
 export const deleteFile = async (fileId: string) => {
-  const { error } = await supabase.from("files").delete().eq("id", fileId)
+  const { error } = await dbClient.from("files").delete().eq("id", fileId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -307,13 +304,13 @@ export const deleteFileWorkspace = async (
   fileId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("file_workspaces")
     .delete()
     .eq("file_id", fileId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

@@ -1,22 +1,22 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getPromptById = async (promptId: string) => {
-  const { data: prompt, error } = await supabase
+  const prompt = await dbClient
     .from("prompts")
     .select("*")
     .eq("id", promptId)
     .single()
 
   if (!prompt) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return prompt
 }
 
 export const getPromptWorkspacesByWorkspaceId = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -29,14 +29,14 @@ export const getPromptWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
 }
 
 export const getPromptWorkspacesByPromptId = async (promptId: string) => {
-  const { data: prompt, error } = await supabase
+  const prompt = await dbClient
     .from("prompts")
     .select(
       `
@@ -49,7 +49,7 @@ export const getPromptWorkspacesByPromptId = async (promptId: string) => {
     .single()
 
   if (!prompt) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return prompt
@@ -59,14 +59,14 @@ export const createPrompt = async (
   prompt: TablesInsert<"prompts">,
   workspace_id: string
 ) => {
-  const { data: createdPrompt, error } = await supabase
+  const createdPrompt = await dbClient
     .from("prompts")
     .insert([prompt])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPromptWorkspace({
@@ -82,13 +82,13 @@ export const createPrompts = async (
   prompts: TablesInsert<"prompts">[],
   workspace_id: string
 ) => {
-  const { data: createdPrompts, error } = await supabase
+  const createdPrompts = await dbClient
     .from("prompts")
     .insert(prompts)
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPromptWorkspaces(
@@ -107,14 +107,14 @@ export const createPromptWorkspace = async (item: {
   prompt_id: string
   workspace_id: string
 }) => {
-  const { data: createdPromptWorkspace, error } = await supabase
+  const createdPromptWorkspace = await dbClient
     .from("prompt_workspaces")
     .insert([item])
     .select("*")
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdPromptWorkspace
@@ -123,12 +123,12 @@ export const createPromptWorkspace = async (item: {
 export const createPromptWorkspaces = async (
   items: { user_id: string; prompt_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdPromptWorkspaces, error } = await supabase
+  const createdPromptWorkspaces = await dbClient
     .from("prompt_workspaces")
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdPromptWorkspaces
 }
@@ -137,7 +137,7 @@ export const updatePrompt = async (
   promptId: string,
   prompt: TablesUpdate<"prompts">
 ) => {
-  const { data: updatedPrompt, error } = await supabase
+  const updatedPrompt = await dbClient
     .from("prompts")
     .update(prompt)
     .eq("id", promptId)
@@ -145,17 +145,17 @@ export const updatePrompt = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedPrompt
 }
 
 export const deletePrompt = async (promptId: string) => {
-  const { error } = await supabase.from("prompts").delete().eq("id", promptId)
+  const { error } = await dbClient.from("prompts").delete().eq("id", promptId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -165,13 +165,13 @@ export const deletePromptWorkspace = async (
   promptId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("prompt_workspaces")
     .delete()
     .eq("prompt_id", promptId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

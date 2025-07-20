@@ -3,7 +3,13 @@ import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
-import { Tables } from "@/supabase/types"
+import {
+  Tables,
+  AssistantFilesResponse,
+  AssistantCollectionsResponse,
+  AssistantToolsResponse,
+  CollectionFilesResponse
+} from "@/supabase/types"
 import { LLMID } from "@/types"
 import { useContext } from "react"
 
@@ -109,7 +115,9 @@ export const usePromptAndCommand = () => {
     )
 
     setNewMessageFiles(prev => {
-      const newFiles = collectionFiles.files
+      const { data: collectionFilesData } =
+        collectionFiles as CollectionFilesResponse
+      const newFiles = collectionFilesData.files
         .filter(
           file =>
             !prev.some(prevFile => prevFile.id === file.id) &&
@@ -151,20 +159,28 @@ export const usePromptAndCommand = () => {
 
     let allFiles = []
 
-    const assistantFiles = (await getAssistantFilesByAssistantId(assistant.id))
-      .files
+    const { data: assistantFilesData } = (await getAssistantFilesByAssistantId(
+      assistant.id
+    )) as AssistantFilesResponse
+    const assistantFiles = assistantFilesData.files
     allFiles = [...assistantFiles]
-    const assistantCollections = (
-      await getAssistantCollectionsByAssistantId(assistant.id)
-    ).collections
+    const { data: assistantCollectionsData } =
+      (await getAssistantCollectionsByAssistantId(
+        assistant.id
+      )) as AssistantCollectionsResponse
+    const assistantCollections = assistantCollectionsData.collections
     for (const collection of assistantCollections) {
-      const collectionFiles = (
-        await getCollectionFilesByCollectionId(collection.id)
-      ).files
+      const { data: collectionFilesData } =
+        (await getCollectionFilesByCollectionId(
+          collection.id
+        )) as CollectionFilesResponse
+      const collectionFiles = collectionFilesData.files
       allFiles = [...allFiles, ...collectionFiles]
     }
-    const assistantTools = (await getAssistantToolsByAssistantId(assistant.id))
-      .tools
+    const { data: assistantToolsData } = (await getAssistantToolsByAssistantId(
+      assistant.id
+    )) as AssistantToolsResponse
+    const assistantTools = assistantToolsData.tools
 
     setSelectedTools(assistantTools)
     setChatFiles(

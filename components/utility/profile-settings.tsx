@@ -226,7 +226,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
       setLoadingUsername(true)
 
-      const response = await fetch(`/api/username/available`, {
+      const response = await fetch(`/pico/v1/username/available`, {
         method: "POST",
         body: JSON.stringify({ username })
       })
