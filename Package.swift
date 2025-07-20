@@ -1,10 +1,14 @@
-// swift-tools-version:6.0
+// swift-tools-version: 6.0
 
 import PackageDescription
 
 let package = Package(
     name: "PicoChatUI",
-    platforms: [.macOS(.v14), .iOS(.v17), .tvOS(.v17)],
+    platforms: [
+        .macOS(.v14), 
+        .iOS(.v17), 
+        .tvOS(.v17)
+    ],
     products: [
         .executable(
             name: "PicoChatUIServer",
@@ -24,22 +28,22 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-             name: "PicoChatUIServer",
-             dependencies: [
-                 "PicoChatUI",
-                 .product(name: "Hummingbird", package: "hummingbird"),
-                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                 .product(name: "HummingbirdBcrypt", package: "hummingbird-auth"),
-                 .product(name: "HummingbirdAuth", package: "hummingbird-auth"),
-                 .product(name: "HummingbirdBasicAuth", package: "hummingbird-auth"),
-                 .product(name: "JWTKit", package: "jwt-kit"),
-                 .product(name: "Crypto", package: "swift-crypto"),
-             ],
-             path: "Sources/PicoChatUIServer",
-             plugins: [
+            name: "PicoChatUIServer",
+            dependencies: [
+                "PicoChatUI",
+                .product(name: "Hummingbird", package: "hummingbird"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "HummingbirdBcrypt", package: "hummingbird-auth"),
+                .product(name: "HummingbirdAuth", package: "hummingbird-auth"),
+                .product(name: "HummingbirdBasicAuth", package: "hummingbird-auth"),
+                .product(name: "JWTKit", package: "jwt-kit"),
+                .product(name: "Crypto", package: "swift-crypto"),
+            ],
+            path: "Sources/PicoChatUIServer",
+            plugins: [
                 .plugin(name: "NPMBuildPlugin")
-             ]
-         ),
+            ]
+        ),
         .target(
             name: "PicoChatUI",
             dependencies: [
@@ -53,11 +57,20 @@ let package = Package(
             path: "Sources/PicoChatUI",
             resources: [
                 .copy("build")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("BareSlashRegexLiterals"),
+                .enableUpcomingFeature("ConciseMagicFile"),
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("ForwardTrailingClosures"),
+                .enableUpcomingFeature("ImplicitOpenExistentials"),
+                .enableUpcomingFeature("StrictConcurrency"),
             ]
         ),
         .plugin(
             name: "NPMBuildPlugin",
-            capability: .buildTool()
+            capability: .buildTool(),
+            path: "Plugins/PMBuildPlugin"
         ),
     ]
 )
