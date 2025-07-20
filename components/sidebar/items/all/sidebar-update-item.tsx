@@ -220,8 +220,10 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
         (assistantCollections as any).collections || []
       )
 
-      const assistantTools = await getAssistantToolsByAssistantId(assistantId)
-      setStartingAssistantTools(assistantTools.tools)
+      const assistantTools = (await getAssistantToolsByAssistantId(
+        assistantId
+      )) as { tools: any[] }
+      setStartingAssistantTools(assistantTools.tools || [])
 
       setSelectedAssistantFiles([])
       setSelectedAssistantCollections([])
@@ -234,32 +236,46 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
   const fetchWorkpaceFunctions = {
     chats: null,
     presets: async (presetId: string) => {
-      const item = await getPresetWorkspacesByPresetId(presetId)
-      return item.workspaces
+      const item = (await getPresetWorkspacesByPresetId(presetId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     },
     prompts: async (promptId: string) => {
-      const item = await getPromptWorkspacesByPromptId(promptId)
-      return item.workspaces
+      const item = (await getPromptWorkspacesByPromptId(promptId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     },
     files: async (fileId: string) => {
-      const item = await getFileWorkspacesByFileId(fileId)
-      return item.workspaces
+      const item = (await getFileWorkspacesByFileId(fileId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     },
     collections: async (collectionId: string) => {
-      const item = await getCollectionWorkspacesByCollectionId(collectionId)
-      return item.workspaces
+      const item = (await getCollectionWorkspacesByCollectionId(
+        collectionId
+      )) as { workspaces: any[] }
+      return item.workspaces || []
     },
     assistants: async (assistantId: string) => {
-      const item = await getAssistantWorkspacesByAssistantId(assistantId)
-      return item.workspaces
+      const item = (await getAssistantWorkspacesByAssistantId(assistantId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     },
     tools: async (toolId: string) => {
-      const item = await getToolWorkspacesByToolId(toolId)
-      return item.workspaces
+      const item = (await getToolWorkspacesByToolId(toolId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     },
     models: async (modelId: string) => {
-      const item = await getModelWorkspacesByModelId(modelId)
-      return item.workspaces
+      const item = (await getModelWorkspacesByModelId(modelId)) as {
+        workspaces: any[]
+      }
+      return item.workspaces || []
     }
   }
 

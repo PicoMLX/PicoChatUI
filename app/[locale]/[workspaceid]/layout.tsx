@@ -15,6 +15,18 @@ import { getToolWorkspacesByWorkspaceId } from "@/db/tools"
 import { getWorkspaceById } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { supabase } from "@/lib/supabase/browser-client"
+import {
+  WorkspaceRow,
+  AssistantRow,
+  CollectionRow,
+  FolderRow,
+  FileRow,
+  PresetRow,
+  PromptRow,
+  ToolRow,
+  ModelRow,
+  ChatRow
+} from "@/supabase/types"
 import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ReactNode, useContext, useEffect, useState } from "react"
@@ -91,13 +103,15 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const fetchWorkspaceData = async (workspaceId: string) => {
     setLoading(true)
 
-    const workspace = await getWorkspaceById(workspaceId)
-    setSelectedWorkspace(workspace as any)
+    const workspace = (await getWorkspaceById(workspaceId)) as WorkspaceRow
+    setSelectedWorkspace(workspace)
 
-    const assistantData = await getAssistantWorkspacesByWorkspaceId(workspaceId)
-    setAssistants((assistantData as any).assistants || [])
+    const assistantData = (await getAssistantWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { assistants: AssistantRow[] }
+    setAssistants(assistantData.assistants || [])
 
-    for (const assistant of (assistantData as any).assistants || []) {
+    for (const assistant of assistantData.assistants || []) {
       let url = ""
 
       if (assistant.image_path) {
@@ -131,46 +145,55 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
       }
     }
 
-    const chats = await getChatsByWorkspaceId(workspaceId)
+    const chats = (await getChatsByWorkspaceId(workspaceId)) as ChatRow[]
     setChats(chats)
 
-    const collectionData =
-      await getCollectionWorkspacesByWorkspaceId(workspaceId)
-    setCollections((collectionData as any).collections || [])
+    const collectionData = (await getCollectionWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { collections: CollectionRow[] }
+    setCollections(collectionData.collections || [])
 
-    const folders = await getFoldersByWorkspaceId(workspaceId)
-    setFolders((folders as any) || [])
+    const folders = (await getFoldersByWorkspaceId(workspaceId)) as FolderRow[]
+    setFolders(folders || [])
 
-    const fileData = await getFileWorkspacesByWorkspaceId(workspaceId)
-    setFiles((fileData as any).files || [])
+    const fileData = (await getFileWorkspacesByWorkspaceId(workspaceId)) as {
+      files: FileRow[]
+    }
+    setFiles(fileData.files || [])
 
-    const presetData = await getPresetWorkspacesByWorkspaceId(workspaceId)
-    setPresets((presetData as any).presets || [])
+    const presetData = (await getPresetWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { presets: PresetRow[] }
+    setPresets(presetData.presets || [])
 
-    const promptData = await getPromptWorkspacesByWorkspaceId(workspaceId)
-    setPrompts((promptData as any).prompts || [])
+    const promptData = (await getPromptWorkspacesByWorkspaceId(
+      workspaceId
+    )) as { prompts: PromptRow[] }
+    setPrompts(promptData.prompts || [])
 
-    const toolData = await getToolWorkspacesByWorkspaceId(workspaceId)
-    setTools((toolData as any).tools || [])
+    const toolData = (await getToolWorkspacesByWorkspaceId(workspaceId)) as {
+      tools: ToolRow[]
+    }
+    setTools(toolData.tools || [])
 
-    const modelData = await getModelWorkspacesByWorkspaceId(workspaceId)
-    setModels((modelData as any).models || [])
+    const modelData = (await getModelWorkspacesByWorkspaceId(workspaceId)) as {
+      models: ModelRow[]
+    }
+    setModels(modelData.models || [])
 
     setChatSettings({
       model: (searchParams.get("model") ||
-        (workspace as any)?.default_model ||
+        workspace?.default_model ||
         "gpt-4-1106-preview") as LLMID,
       prompt:
-        (workspace as any)?.default_prompt ||
+        workspace?.default_prompt ||
         "You are a friendly, helpful AI assistant.",
-      temperature: (workspace as any)?.default_temperature || 0.5,
-      contextLength: (workspace as any)?.default_context_length || 4096,
-      includeProfileContext:
-        (workspace as any)?.include_profile_context || true,
+      temperature: workspace?.default_temperature || 0.5,
+      contextLength: workspace?.default_context_length || 4096,
+      includeProfileContext: workspace?.include_profile_context || true,
       includeWorkspaceInstructions:
-        (workspace as any)?.include_workspace_instructions || true,
-      embeddingsProvider:
-        ((workspace as any)?.embeddings_provider as "local") || "local"
+        workspace?.include_workspace_instructions || true,
+      embeddingsProvider: (workspace?.embeddings_provider as "local") || "local"
     })
 
     setLoading(false)
