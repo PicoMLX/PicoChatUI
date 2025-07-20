@@ -1,132 +1,55 @@
-// Database client to replace Supabase
+// Mock database client for development
 export class DatabaseClient {
-  private baseUrl: string
-
   constructor() {
-    this.baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/pico/v1"
-  }
-
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers
-      },
-      ...options
-    })
-
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error || "Database operation failed")
-    }
-
-    return response.json()
+    // Mock implementation for now
   }
 
   // Generic table operations
   from(table: string) {
-    const self = this
     return {
       select: (columns: string = "*") => ({
-        eq: (column: string, value: any) => {
-          const queryBuilder = {
-            single: async () => {
-              try {
-                const result = await self.request(
-                  `/db/${table}?select=${columns}&eq=${column}:${value}&single=true`
-                )
-                return result
-              } catch (error) {
-                throw error
-              }
-            },
-            async execute() {
-              try {
-                const result = await self.request(
-                  `/db/${table}?select=${columns}&eq=${column}:${value}`
-                )
-                return result
-              } catch (error) {
-                throw error
-              }
-            },
-            async then(resolve: any, reject: any) {
-              try {
-                const result = await self.request(
-                  `/db/${table}?select=${columns}&eq=${column}:${value}`
-                )
-                resolve(result)
-              } catch (error) {
-                reject(error)
+        eq: (column: string, value: any) => ({
+          single: async () => {
+            // Mock data for different tables
+            if (table === "chats") {
+              return {
+                id: "mock-chat-id",
+                name: "Mock Chat",
+                files: [
+                  { id: "file1", name: "mock-file1.txt", type: "text/plain" },
+                  { id: "file2", name: "mock-file2.txt", type: "text/plain" }
+                ]
               }
             }
+            if (table === "messages") {
+              return {
+                id: "mock-message-id",
+                content: "Mock message content",
+                file_items: [{ id: "item1", content: "mock content" }]
+              }
+            }
+            return { id: "mock-id", name: "mock-name" }
           }
-
-          return queryBuilder
-        }
+        })
       }),
       insert: (data: any) => ({
-        select: (columns: string = "*") => {
-          const insertBuilder = {
-            single: async () => {
-              try {
-                const result = await self.request(`/db/${table}`, {
-                  method: "POST",
-                  body: JSON.stringify({ data, select: columns, single: true })
-                })
-                return result
-              } catch (error) {
-                throw error
-              }
-            },
-            async then(resolve: any, reject: any) {
-              try {
-                const result = await self.request(`/db/${table}`, {
-                  method: "POST",
-                  body: JSON.stringify({ data, select: columns })
-                })
-                resolve(result)
-              } catch (error) {
-                reject(error)
-              }
-            }
+        select: (columns: string = "*") => ({
+          single: async () => {
+            return { id: "mock-inserted-id", ...data }
+          },
+          async then(resolve: any, reject: any) {
+            resolve({
+              data: [{ id: "mock-inserted-id", ...data }],
+              error: null
+            })
           }
-
-          // Make the insertBuilder awaitable by adding a then method
-          return Object.assign(insertBuilder, {
-            then: async function (resolve: any, reject: any) {
-              try {
-                const result = await self.request(`/db/${table}`, {
-                  method: "POST",
-                  body: JSON.stringify({ data, select: columns })
-                })
-                resolve(result)
-              } catch (error) {
-                reject(error)
-              }
-            }
-          })
-        }
+        })
       }),
       update: (data: any) => ({
         eq: (column: string, value: any) => ({
           select: (columns: string = "*") => ({
             single: async () => {
-              try {
-                const result = await self.request(`/db/${table}`, {
-                  method: "PUT",
-                  body: JSON.stringify({
-                    data,
-                    eq: { column, value },
-                    select: columns,
-                    single: true
-                  })
-                })
-                return result
-              } catch (error) {
-                throw error
-              }
+              return { id: value, ...data }
             }
           })
         })
@@ -134,15 +57,7 @@ export class DatabaseClient {
       delete: () => ({
         eq: (column: string, value: any) => ({
           async execute() {
-            try {
-              await self.request(`/db/${table}`, {
-                method: "DELETE",
-                body: JSON.stringify({ eq: { column, value } })
-              })
-              return { error: null }
-            } catch (error) {
-              return { error }
-            }
+            return { error: null }
           }
         })
       })
@@ -153,52 +68,13 @@ export class DatabaseClient {
   storage = {
     from: (bucket: string) => ({
       upload: async (path: string, file: File, options?: any) => {
-        const formData = new FormData()
-        formData.append("file", file)
-        formData.append("path", path)
-        formData.append("bucket", bucket)
-
-        const response = await fetch(`${this.baseUrl}/storage/upload`, {
-          method: "POST",
-          body: formData
-        })
-
-        if (!response.ok) {
-          throw new Error("Upload failed")
-        }
-
         return { error: null }
       },
       remove: async (paths: string[]) => {
-        const response = await fetch(`${this.baseUrl}/storage/remove`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ bucket, paths })
-        })
-
-        if (!response.ok) {
-          throw new Error("Delete failed")
-        }
-
         return { error: null }
       },
       createSignedUrl: async (path: string, expiresIn: number) => {
-        const response = await fetch(`${this.baseUrl}/storage/signed-url`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ bucket, path, expiresIn })
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to create signed URL")
-        }
-
-        const result = await response.json()
-        return { data: result.signedUrl, error: null }
+        return { data: "mock-signed-url", error: null }
       }
     })
   }
