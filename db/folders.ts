@@ -8,7 +8,7 @@ export const getFoldersByWorkspaceId = async (workspaceId: string) => {
     .eq("workspace_id", workspaceId)
 
   if (!folders) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return folders
@@ -22,7 +22,7 @@ export const createFolder = async (folder: TablesInsert<"folders">) => {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdFolder
@@ -40,7 +40,7 @@ export const updateFolder = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedFolder
@@ -50,7 +50,7 @@ export const deleteFolder = async (folderId: string) => {
   const { error } = await supabase.from("folders").delete().eq("id", folderId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true

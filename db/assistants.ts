@@ -9,7 +9,7 @@ export const getAssistantById = async (assistantId: string) => {
     .single()
 
   if (!assistant) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return assistant
@@ -31,7 +31,7 @@ export const getAssistantWorkspacesByWorkspaceId = async (
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -53,7 +53,7 @@ export const getAssistantWorkspacesByAssistantId = async (
     .single()
 
   if (!assistant) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return assistant
@@ -70,7 +70,7 @@ export const createAssistant = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createAssistantWorkspace({
@@ -92,7 +92,7 @@ export const createAssistants = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createAssistantWorkspaces(
@@ -118,7 +118,7 @@ export const createAssistantWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdAssistantWorkspace
@@ -132,7 +132,7 @@ export const createAssistantWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdAssistantWorkspaces
 }
@@ -149,7 +149,7 @@ export const updateAssistant = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedAssistant
@@ -162,7 +162,7 @@ export const deleteAssistant = async (assistantId: string) => {
     .eq("id", assistantId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -178,7 +178,7 @@ export const deleteAssistantWorkspace = async (
     .eq("assistant_id", assistantId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

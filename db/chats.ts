@@ -19,7 +19,7 @@ export const getChatsByWorkspaceId = async (workspaceId: string) => {
     .order("created_at", { ascending: false })
 
   if (!chats) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return chats
@@ -33,7 +33,7 @@ export const createChat = async (chat: TablesInsert<"chats">) => {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChat
@@ -46,7 +46,7 @@ export const createChats = async (chats: TablesInsert<"chats">[]) => {
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChats
@@ -64,7 +64,7 @@ export const updateChat = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedChat
@@ -74,7 +74,7 @@ export const deleteChat = async (chatId: string) => {
   const { error } = await supabase.from("chats").delete().eq("id", chatId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true

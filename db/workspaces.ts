@@ -10,7 +10,7 @@ export const getHomeWorkspaceByUserId = async (userId: string) => {
     .single()
 
   if (!homeWorkspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return homeWorkspace.id
@@ -24,7 +24,7 @@ export const getWorkspaceById = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -38,7 +38,7 @@ export const getWorkspacesByUserId = async (userId: string) => {
     .order("created_at", { ascending: false })
 
   if (!workspaces) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspaces
@@ -54,7 +54,7 @@ export const createWorkspace = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdWorkspace
@@ -72,7 +72,7 @@ export const updateWorkspace = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedWorkspace
@@ -85,7 +85,7 @@ export const deleteWorkspace = async (workspaceId: string) => {
     .eq("id", workspaceId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true

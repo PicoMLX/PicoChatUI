@@ -9,7 +9,7 @@ export const getPromptById = async (promptId: string) => {
     .single()
 
   if (!prompt) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return prompt
@@ -29,7 +29,7 @@ export const getPromptWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -49,7 +49,7 @@ export const getPromptWorkspacesByPromptId = async (promptId: string) => {
     .single()
 
   if (!prompt) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return prompt
@@ -66,7 +66,7 @@ export const createPrompt = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPromptWorkspace({
@@ -88,7 +88,7 @@ export const createPrompts = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPromptWorkspaces(
@@ -114,7 +114,7 @@ export const createPromptWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdPromptWorkspace
@@ -128,7 +128,7 @@ export const createPromptWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdPromptWorkspaces
 }
@@ -145,7 +145,7 @@ export const updatePrompt = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedPrompt
@@ -155,7 +155,7 @@ export const deletePrompt = async (promptId: string) => {
   const { error } = await supabase.from("prompts").delete().eq("id", promptId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -171,7 +171,7 @@ export const deletePromptWorkspace = async (
     .eq("prompt_id", promptId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

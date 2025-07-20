@@ -9,7 +9,7 @@ export const getPresetById = async (presetId: string) => {
     .single()
 
   if (!preset) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return preset
@@ -29,7 +29,7 @@ export const getPresetWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -49,7 +49,7 @@ export const getPresetWorkspacesByPresetId = async (presetId: string) => {
     .single()
 
   if (!preset) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return preset
@@ -66,7 +66,7 @@ export const createPreset = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPresetWorkspace({
@@ -88,7 +88,7 @@ export const createPresets = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createPresetWorkspaces(
@@ -114,7 +114,7 @@ export const createPresetWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdPresetWorkspace
@@ -128,7 +128,7 @@ export const createPresetWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdPresetWorkspaces
 }
@@ -145,7 +145,7 @@ export const updatePreset = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedPreset
@@ -155,7 +155,7 @@ export const deletePreset = async (presetId: string) => {
   const { error } = await supabase.from("presets").delete().eq("id", presetId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -171,7 +171,7 @@ export const deletePresetWorkspace = async (
     .eq("preset_id", presetId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

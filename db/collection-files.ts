@@ -17,7 +17,7 @@ export const getCollectionFilesByCollectionId = async (
     .single()
 
   if (!collectionFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return collectionFiles
@@ -32,7 +32,7 @@ export const createCollectionFile = async (
     .select("*")
 
   if (!createdCollectionFile) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdCollectionFile
@@ -47,7 +47,7 @@ export const createCollectionFiles = async (
     .select("*")
 
   if (!createdCollectionFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdCollectionFiles
@@ -63,7 +63,7 @@ export const deleteCollectionFile = async (
     .eq("collection_id", collectionId)
     .eq("file_id", fileId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

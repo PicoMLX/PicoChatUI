@@ -15,7 +15,7 @@ export const getAssistantToolsByAssistantId = async (assistantId: string) => {
     .single()
 
   if (!assistantTools) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return assistantTools
@@ -30,7 +30,7 @@ export const createAssistantTool = async (
     .select("*")
 
   if (!createdAssistantTool) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdAssistantTool
@@ -45,7 +45,7 @@ export const createAssistantTools = async (
     .select("*")
 
   if (!createdAssistantTools) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdAssistantTools
@@ -61,7 +61,7 @@ export const deleteAssistantTool = async (
     .eq("assistant_id", assistantId)
     .eq("tool_id", toolId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

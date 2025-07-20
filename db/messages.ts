@@ -36,7 +36,7 @@ export const createMessage = async (message: TablesInsert<"messages">) => {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdMessage
@@ -49,7 +49,7 @@ export const createMessages = async (messages: TablesInsert<"messages">[]) => {
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdMessages
@@ -67,7 +67,7 @@ export const updateMessage = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedMessage
@@ -77,7 +77,7 @@ export const deleteMessage = async (messageId: string) => {
   const { error } = await supabase.from("messages").delete().eq("id", messageId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true

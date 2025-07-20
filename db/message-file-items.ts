@@ -14,7 +14,7 @@ export const getMessageFileItemsByMessageId = async (messageId: string) => {
     .single()
 
   if (!messageFileItems) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return messageFileItems
@@ -29,7 +29,7 @@ export const createMessageFileItems = async (
     .select("*")
 
   if (!createdMessageFileItems) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdMessageFileItems

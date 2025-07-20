@@ -9,7 +9,7 @@ export const getModelById = async (modelId: string) => {
     .single()
 
   if (!model) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return model
@@ -29,7 +29,7 @@ export const getModelWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -49,7 +49,7 @@ export const getModelWorkspacesByModelId = async (modelId: string) => {
     .single()
 
   if (!model) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return model
@@ -66,7 +66,7 @@ export const createModel = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createModelWorkspace({
@@ -88,7 +88,7 @@ export const createModels = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createModelWorkspaces(
@@ -114,7 +114,7 @@ export const createModelWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdModelWorkspace
@@ -128,7 +128,7 @@ export const createModelWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdModelWorkspaces
 }
@@ -145,7 +145,7 @@ export const updateModel = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedModel
@@ -155,7 +155,7 @@ export const deleteModel = async (modelId: string) => {
   const { error } = await supabase.from("models").delete().eq("id", modelId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -171,7 +171,7 @@ export const deleteModelWorkspace = async (
     .eq("model_id", modelId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

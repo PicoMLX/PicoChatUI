@@ -14,7 +14,7 @@ export const getProfileByUserId = async (userId: string) => {
 
     return profile
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 }
 
@@ -27,7 +27,7 @@ export const getProfilesByWorkspaceId = async (workspaceId: string) => {
 
     return profiles || []
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 }
 
@@ -41,7 +41,7 @@ export const createProfile = async (profile: any) => {
 
     return createdProfile
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 }
 
@@ -56,7 +56,7 @@ export const updateProfile = async (profileId: string, profile: any) => {
 
     return updatedProfile
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 }
 
@@ -64,6 +64,6 @@ export const deleteProfile = async (profileId: string) => {
   try {
     await dbClient.from("profiles").delete().eq("id", profileId).execute()
   } catch (error: any) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 }

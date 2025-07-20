@@ -15,7 +15,7 @@ export const getChatFilesByChatId = async (chatId: string) => {
     .single()
 
   if (!chatFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return chatFiles
@@ -28,7 +28,7 @@ export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
     .select("*")
 
   if (!createdChatFile) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChatFile
@@ -43,7 +43,7 @@ export const createChatFiles = async (
     .select("*")
 
   if (!createdChatFiles) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdChatFiles

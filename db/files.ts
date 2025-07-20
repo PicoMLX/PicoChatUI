@@ -12,7 +12,7 @@ export const getFileById = async (fileId: string) => {
     .single()
 
   if (!file) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return file
@@ -32,7 +32,7 @@ export const getFileWorkspacesByWorkspaceId = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -52,7 +52,7 @@ export const getFileWorkspacesByFileId = async (fileId: string) => {
     .single()
 
   if (!file) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return file
@@ -111,7 +111,7 @@ export const createFile = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspace({
@@ -171,7 +171,7 @@ export const createDocXFile = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspace({
@@ -230,7 +230,7 @@ export const createFiles = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createFileWorkspaces(
@@ -256,7 +256,7 @@ export const createFileWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdFileWorkspace
@@ -270,7 +270,7 @@ export const createFileWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdFileWorkspaces
 }
@@ -287,7 +287,7 @@ export const updateFile = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedFile
@@ -297,7 +297,7 @@ export const deleteFile = async (fileId: string) => {
   const { error } = await supabase.from("files").delete().eq("id", fileId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -313,7 +313,7 @@ export const deleteFileWorkspace = async (
     .eq("file_id", fileId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

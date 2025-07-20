@@ -9,7 +9,7 @@ export const getCollectionById = async (collectionId: string) => {
     .single()
 
   if (!collection) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return collection
@@ -31,7 +31,7 @@ export const getCollectionWorkspacesByWorkspaceId = async (
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return workspace
@@ -53,7 +53,7 @@ export const getCollectionWorkspacesByCollectionId = async (
     .single()
 
   if (!collection) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return collection
@@ -70,7 +70,7 @@ export const createCollection = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createCollectionWorkspace({
@@ -92,7 +92,7 @@ export const createCollections = async (
     .select("*")
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   await createCollectionWorkspaces(
@@ -118,7 +118,7 @@ export const createCollectionWorkspace = async (item: {
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return createdCollectionWorkspace
@@ -132,7 +132,7 @@ export const createCollectionWorkspaces = async (
     .insert(items)
     .select("*")
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return createdCollectionWorkspaces
 }
@@ -149,7 +149,7 @@ export const updateCollection = async (
     .single()
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return updatedCollection
@@ -162,7 +162,7 @@ export const deleteCollection = async (collectionId: string) => {
     .eq("id", collectionId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error("Database operation failed")
   }
 
   return true
@@ -178,7 +178,7 @@ export const deleteCollectionWorkspace = async (
     .eq("collection_id", collectionId)
     .eq("workspace_id", workspaceId)
 
-  if (error) throw new Error(error.message)
+  throw new Error("Database operation failed")
 
   return true
 }

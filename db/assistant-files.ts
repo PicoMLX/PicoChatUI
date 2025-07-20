@@ -1,8 +1,7 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert } from "@/supabase/types"
+import { dbClient } from "@/lib/db/client"
 
 export const getAssistantFilesByAssistantId = async (assistantId: string) => {
-  const { data: assistantFiles, error } = await supabase
+  const assistantFiles = await dbClient
     .from("assistants")
     .select(
       `
@@ -22,28 +21,24 @@ export const getAssistantFilesByAssistantId = async (assistantId: string) => {
 }
 
 export const createAssistantFile = async (assistantFile: any) => {
-  const { data: createdAssistantFile, error } = await supabase
+  const createdAssistantFile = await dbClient
     .from("assistant_files")
     .insert(assistantFile)
-    .select("*")
 
   if (!createdAssistantFile) {
-    throw new Error(error.message)
+    throw new Error("Failed to create assistant file")
   }
 
   return createdAssistantFile
 }
 
-export const createAssistantFiles = async (
-  assistantFiles: TablesInsert<"assistant_files">[]
-) => {
-  const { data: createdAssistantFiles, error } = await supabase
+export const createAssistantFiles = async (assistantFiles: any[]) => {
+  const createdAssistantFiles = await dbClient
     .from("assistant_files")
     .insert(assistantFiles)
-    .select("*")
 
   if (!createdAssistantFiles) {
-    throw new Error(error.message)
+    throw new Error("Failed to create assistant files")
   }
 
   return createdAssistantFiles
@@ -53,13 +48,15 @@ export const deleteAssistantFile = async (
   assistantId: string,
   fileId: string
 ) => {
-  const { error } = await supabase
-    .from("assistant_files")
-    .delete()
-    .eq("assistant_id", assistantId)
-    .eq("file_id", fileId)
-
-  if (error) throw new Error(error.message)
+  try {
+    await dbClient
+      .from("assistant_files")
+      .delete()
+      .eq("assistant_id", assistantId)
+      .execute()
+  } catch (error: any) {
+    throw new Error("Failed to delete assistant file")
+  }
 
   return true
 }
