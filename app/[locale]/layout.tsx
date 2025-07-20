@@ -7,7 +7,7 @@ import { Metadata, Viewport } from "next"
 import { ReactNode } from "react"
 import "./globals.css"
 
-// Use system font instead of Google Fonts to avoid network requests during build
+// Use local Inter font
 const inter = { className: "font-sans" }
 const APP_NAME = "Chatbot UI"
 const APP_DEFAULT_TITLE = "Chatbot UI"
