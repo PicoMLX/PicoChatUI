@@ -15,7 +15,7 @@ export const getAssistantFilesByAssistantId = async (assistantId: string) => {
     .single()
 
   if (!assistantFiles) {
-    throw new Error(error.message)
+    throw new Error("Failed to fetch assistant files")
   }
 
   return assistantFiles

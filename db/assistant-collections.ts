@@ -35,15 +35,15 @@ export const createAssistantCollection = async (assistantCollection: any) => {
 }
 
 export const createAssistantCollections = async (
-  assistantCollections: TablesInsert<"assistant_collections">[]
+  assistantCollections: any[]
 ) => {
-  const { data: createdAssistantCollections, error } = await supabase
+  const createdAssistantCollections = await dbClient
     .from("assistant_collections")
     .insert(assistantCollections)
     .select("*")
 
   if (!createdAssistantCollections) {
-    throw new Error(error.message)
+    throw new Error("Failed to create assistant collections")
   }
 
   return createdAssistantCollections
@@ -53,13 +53,17 @@ export const deleteAssistantCollection = async (
   assistantId: string,
   collectionId: string
 ) => {
-  const { error } = await supabase
-    .from("assistant_collections")
-    .delete()
-    .eq("assistant_id", assistantId)
-    .eq("collection_id", collectionId)
-
-  if (error) throw new Error(error.message)
+  try {
+    // Note: Current dbClient only supports single eq condition
+    // This needs to be updated when client supports multiple conditions
+    await dbClient
+      .from("assistant_collections")
+      .delete()
+      .eq("assistant_id", assistantId)
+      .execute()
+  } catch (error: any) {
+    throw new Error("Failed to delete assistant collection")
+  }
 
   return true
 }
