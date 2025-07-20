@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert } from "@/supabase/types"
 
 export const getChatFilesByChatId = async (chatId: string) => {
-  const { data: chatFiles, error } = await supabase
+  const chatFiles = await dbClient
     .from("chats")
     .select(
       `
@@ -22,7 +22,7 @@ export const getChatFilesByChatId = async (chatId: string) => {
 }
 
 export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
-  const { data: createdChatFile, error } = await supabase
+  const createdChatFile = await dbClient
     .from("chat_files")
     .insert(chatFile)
     .select("*")
@@ -37,7 +37,7 @@ export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
 export const createChatFiles = async (
   chatFiles: TablesInsert<"chat_files">[]
 ) => {
-  const { data: createdChatFiles, error } = await supabase
+  const createdChatFiles = await dbClient
     .from("chat_files")
     .insert(chatFiles)
     .select("*")

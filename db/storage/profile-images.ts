@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { Tables } from "@/supabase/types"
 
 export const uploadProfileImage = async (
@@ -17,7 +17,7 @@ export const uploadProfileImage = async (
   let filePath = `${profile.user_id}/${Date.now()}`
 
   if (currentPath.length > 0) {
-    const { error: deleteError } = await supabase.storage
+    const { error: deleteError } = await dbClient.storage
       .from(bucket)
       .remove([currentPath])
 
@@ -26,7 +26,7 @@ export const uploadProfileImage = async (
     }
   }
 
-  const { error } = await supabase.storage
+  const { error } = await dbClient.storage
     .from(bucket)
     .upload(filePath, image, {
       upsert: true

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 
 export const uploadMessageImage = async (path: string, image: File) => {
   const bucket = "message_images"
@@ -9,7 +9,7 @@ export const uploadMessageImage = async (path: string, image: File) => {
     throw new Error(`Image must be less than ${imageSizeLimit / 1000000}MB`)
   }
 
-  const { error } = await supabase.storage.from(bucket).upload(path, image, {
+  const { error } = await dbClient.storage.from(bucket).upload(path, image, {
     upsert: true
   })
 
@@ -21,7 +21,7 @@ export const uploadMessageImage = async (path: string, image: File) => {
 }
 
 export const getMessageImageFromStorage = async (filePath: string) => {
-  const { data, error } = await supabase.storage
+  const { data, error } = await dbClient.storage
     .from("message_images")
     .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
 

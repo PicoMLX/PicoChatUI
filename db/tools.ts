@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getToolById = async (toolId: string) => {
-  const { data: tool, error } = await supabase
+  const tool = await dbClient
     .from("tools")
     .select("*")
     .eq("id", toolId)
@@ -16,7 +16,7 @@ export const getToolById = async (toolId: string) => {
 }
 
 export const getToolWorkspacesByWorkspaceId = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -36,7 +36,7 @@ export const getToolWorkspacesByWorkspaceId = async (workspaceId: string) => {
 }
 
 export const getToolWorkspacesByToolId = async (toolId: string) => {
-  const { data: tool, error } = await supabase
+  const tool = await dbClient
     .from("tools")
     .select(
       `
@@ -59,7 +59,7 @@ export const createTool = async (
   tool: TablesInsert<"tools">,
   workspace_id: string
 ) => {
-  const { data: createdTool, error } = await supabase
+  const createdTool = await dbClient
     .from("tools")
     .insert([tool])
     .select("*")
@@ -82,10 +82,7 @@ export const createTools = async (
   tools: TablesInsert<"tools">[],
   workspace_id: string
 ) => {
-  const { data: createdTools, error } = await supabase
-    .from("tools")
-    .insert(tools)
-    .select("*")
+  const createdTools = await dbClient.from("tools").insert(tools).select("*")
 
   if (error) {
     throw new Error("Database operation failed")
@@ -107,7 +104,7 @@ export const createToolWorkspace = async (item: {
   tool_id: string
   workspace_id: string
 }) => {
-  const { data: createdToolWorkspace, error } = await supabase
+  const createdToolWorkspace = await dbClient
     .from("tool_workspaces")
     .insert([item])
     .select("*")
@@ -123,7 +120,7 @@ export const createToolWorkspace = async (item: {
 export const createToolWorkspaces = async (
   items: { user_id: string; tool_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdToolWorkspaces, error } = await supabase
+  const createdToolWorkspaces = await dbClient
     .from("tool_workspaces")
     .insert(items)
     .select("*")
@@ -137,7 +134,7 @@ export const updateTool = async (
   toolId: string,
   tool: TablesUpdate<"tools">
 ) => {
-  const { data: updatedTool, error } = await supabase
+  const updatedTool = await dbClient
     .from("tools")
     .update(tool)
     .eq("id", toolId)
@@ -152,7 +149,7 @@ export const updateTool = async (
 }
 
 export const deleteTool = async (toolId: string) => {
-  const { error } = await supabase.from("tools").delete().eq("id", toolId)
+  const { error } = await dbClient.from("tools").delete().eq("id", toolId)
 
   if (error) {
     throw new Error("Database operation failed")
@@ -165,7 +162,7 @@ export const deleteToolWorkspace = async (
   toolId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("tool_workspaces")
     .delete()
     .eq("tool_id", toolId)

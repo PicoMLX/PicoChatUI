@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert } from "@/supabase/types"
 
 export const getMessageFileItemsByMessageId = async (messageId: string) => {
-  const { data: messageFileItems, error } = await supabase
+  const messageFileItems = await dbClient
     .from("messages")
     .select(
       `
@@ -23,7 +23,7 @@ export const getMessageFileItemsByMessageId = async (messageId: string) => {
 export const createMessageFileItems = async (
   messageFileItems: TablesInsert<"message_file_items">[]
 ) => {
-  const { data: createdMessageFileItems, error } = await supabase
+  const createdMessageFileItems = await dbClient
     .from("message_file_items")
     .insert(messageFileItems)
     .select("*")

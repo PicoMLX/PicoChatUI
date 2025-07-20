@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getHomeWorkspaceByUserId = async (userId: string) => {
-  const { data: homeWorkspace, error } = await supabase
+  const homeWorkspace = await dbClient
     .from("workspaces")
     .select("*")
     .eq("user_id", userId)
@@ -17,7 +17,7 @@ export const getHomeWorkspaceByUserId = async (userId: string) => {
 }
 
 export const getWorkspaceById = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select("*")
     .eq("id", workspaceId)
@@ -31,7 +31,7 @@ export const getWorkspaceById = async (workspaceId: string) => {
 }
 
 export const getWorkspacesByUserId = async (userId: string) => {
-  const { data: workspaces, error } = await supabase
+  const workspaces = await dbClient
     .from("workspaces")
     .select("*")
     .eq("user_id", userId)
@@ -47,7 +47,7 @@ export const getWorkspacesByUserId = async (userId: string) => {
 export const createWorkspace = async (
   workspace: TablesInsert<"workspaces">
 ) => {
-  const { data: createdWorkspace, error } = await supabase
+  const createdWorkspace = await dbClient
     .from("workspaces")
     .insert([workspace])
     .select("*")
@@ -64,7 +64,7 @@ export const updateWorkspace = async (
   workspaceId: string,
   workspace: TablesUpdate<"workspaces">
 ) => {
-  const { data: updatedWorkspace, error } = await supabase
+  const updatedWorkspace = await dbClient
     .from("workspaces")
     .update(workspace)
     .eq("id", workspaceId)
@@ -79,7 +79,7 @@ export const updateWorkspace = async (
 }
 
 export const deleteWorkspace = async (workspaceId: string) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("workspaces")
     .delete()
     .eq("id", workspaceId)

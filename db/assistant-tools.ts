@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert } from "@/supabase/types"
 
 export const getAssistantToolsByAssistantId = async (assistantId: string) => {
-  const { data: assistantTools, error } = await supabase
+  const assistantTools = await dbClient
     .from("assistants")
     .select(
       `
@@ -21,10 +21,8 @@ export const getAssistantToolsByAssistantId = async (assistantId: string) => {
   return assistantTools
 }
 
-export const createAssistantTool = async (
-  assistantTool: TablesInsert<"assistant_tools">
-) => {
-  const { data: createdAssistantTool, error } = await supabase
+export const createAssistantTool = async (assistantTool: any) => {
+  const createdAssistantTool = await dbClient
     .from("assistant_tools")
     .insert(assistantTool)
     .select("*")
@@ -39,7 +37,7 @@ export const createAssistantTool = async (
 export const createAssistantTools = async (
   assistantTools: TablesInsert<"assistant_tools">[]
 ) => {
-  const { data: createdAssistantTools, error } = await supabase
+  const createdAssistantTools = await dbClient
     .from("assistant_tools")
     .insert(assistantTools)
     .select("*")
@@ -55,7 +53,7 @@ export const deleteAssistantTool = async (
   assistantId: string,
   toolId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("assistant_tools")
     .delete()
     .eq("assistant_id", assistantId)

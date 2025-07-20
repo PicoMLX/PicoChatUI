@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getCollectionById = async (collectionId: string) => {
-  const { data: collection, error } = await supabase
+  const collection = await dbClient
     .from("collections")
     .select("*")
     .eq("id", collectionId)
@@ -18,7 +18,7 @@ export const getCollectionById = async (collectionId: string) => {
 export const getCollectionWorkspacesByWorkspaceId = async (
   workspaceId: string
 ) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -40,7 +40,7 @@ export const getCollectionWorkspacesByWorkspaceId = async (
 export const getCollectionWorkspacesByCollectionId = async (
   collectionId: string
 ) => {
-  const { data: collection, error } = await supabase
+  const collection = await dbClient
     .from("collections")
     .select(
       `
@@ -63,7 +63,7 @@ export const createCollection = async (
   collection: TablesInsert<"collections">,
   workspace_id: string
 ) => {
-  const { data: createdCollection, error } = await supabase
+  const createdCollection = await dbClient
     .from("collections")
     .insert([collection])
     .select("*")
@@ -86,7 +86,7 @@ export const createCollections = async (
   collections: TablesInsert<"collections">[],
   workspace_id: string
 ) => {
-  const { data: createdCollections, error } = await supabase
+  const createdCollections = await dbClient
     .from("collections")
     .insert(collections)
     .select("*")
@@ -111,7 +111,7 @@ export const createCollectionWorkspace = async (item: {
   collection_id: string
   workspace_id: string
 }) => {
-  const { data: createdCollectionWorkspace, error } = await supabase
+  const createdCollectionWorkspace = await dbClient
     .from("collection_workspaces")
     .insert([item])
     .select("*")
@@ -127,7 +127,7 @@ export const createCollectionWorkspace = async (item: {
 export const createCollectionWorkspaces = async (
   items: { user_id: string; collection_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdCollectionWorkspaces, error } = await supabase
+  const createdCollectionWorkspaces = await dbClient
     .from("collection_workspaces")
     .insert(items)
     .select("*")
@@ -141,7 +141,7 @@ export const updateCollection = async (
   collectionId: string,
   collection: TablesUpdate<"collections">
 ) => {
-  const { data: updatedCollection, error } = await supabase
+  const updatedCollection = await dbClient
     .from("collections")
     .update(collection)
     .eq("id", collectionId)
@@ -156,7 +156,7 @@ export const updateCollection = async (
 }
 
 export const deleteCollection = async (collectionId: string) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("collections")
     .delete()
     .eq("id", collectionId)
@@ -172,7 +172,7 @@ export const deleteCollectionWorkspace = async (
   collectionId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("collection_workspaces")
     .delete()
     .eq("collection_id", collectionId)

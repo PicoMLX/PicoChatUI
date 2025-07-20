@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getFoldersByWorkspaceId = async (workspaceId: string) => {
-  const { data: folders, error } = await supabase
+  const folders = await dbClient
     .from("folders")
     .select("*")
     .eq("workspace_id", workspaceId)
@@ -15,7 +15,7 @@ export const getFoldersByWorkspaceId = async (workspaceId: string) => {
 }
 
 export const createFolder = async (folder: TablesInsert<"folders">) => {
-  const { data: createdFolder, error } = await supabase
+  const createdFolder = await dbClient
     .from("folders")
     .insert([folder])
     .select("*")
@@ -32,7 +32,7 @@ export const updateFolder = async (
   folderId: string,
   folder: TablesUpdate<"folders">
 ) => {
-  const { data: updatedFolder, error } = await supabase
+  const updatedFolder = await dbClient
     .from("folders")
     .update(folder)
     .eq("id", folderId)
@@ -47,7 +47,7 @@ export const updateFolder = async (
 }
 
 export const deleteFolder = async (folderId: string) => {
-  const { error } = await supabase.from("folders").delete().eq("id", folderId)
+  const { error } = await dbClient.from("folders").delete().eq("id", folderId)
 
   if (error) {
     throw new Error("Database operation failed")

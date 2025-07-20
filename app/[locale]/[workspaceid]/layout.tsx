@@ -103,7 +103,9 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const fetchWorkspaceData = async (workspaceId: string) => {
     setLoading(true)
 
-    const workspace = (await getWorkspaceById(workspaceId)) as WorkspaceRow
+    const workspace = (await getWorkspaceById(workspaceId)) as {
+      data: WorkspaceRow
+    }
     setSelectedWorkspace(workspace)
 
     const assistantData = (await getAssistantWorkspacesByWorkspaceId(

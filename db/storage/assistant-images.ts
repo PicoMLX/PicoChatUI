@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { Tables } from "@/supabase/types"
 
 export const uploadAssistantImage = async (
@@ -17,7 +17,7 @@ export const uploadAssistantImage = async (
   let filePath = `${assistant.user_id}/${assistant.id}/${Date.now()}`
 
   if (currentPath.length > 0) {
-    const { error: deleteError } = await supabase.storage
+    const { error: deleteError } = await dbClient.storage
       .from(bucket)
       .remove([currentPath])
 
@@ -26,7 +26,7 @@ export const uploadAssistantImage = async (
     }
   }
 
-  const { error } = await supabase.storage
+  const { error } = await dbClient.storage
     .from(bucket)
     .upload(filePath, image, {
       upsert: true
@@ -41,7 +41,7 @@ export const uploadAssistantImage = async (
 
 export const getAssistantImageFromStorage = async (filePath: string) => {
   try {
-    const { data, error } = await supabase.storage
+    const { data, error } = await dbClient.storage
       .from("assistant_images")
       .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
 

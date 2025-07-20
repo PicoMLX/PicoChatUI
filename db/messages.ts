@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getMessageById = async (messageId: string) => {
-  const { data: message } = await supabase
+  const { data: message } = await dbClient
     .from("messages")
     .select("*")
     .eq("id", messageId)
@@ -16,7 +16,7 @@ export const getMessageById = async (messageId: string) => {
 }
 
 export const getMessagesByChatId = async (chatId: string) => {
-  const { data: messages } = await supabase
+  const { data: messages } = await dbClient
     .from("messages")
     .select("*")
     .eq("chat_id", chatId)
@@ -29,7 +29,7 @@ export const getMessagesByChatId = async (chatId: string) => {
 }
 
 export const createMessage = async (message: TablesInsert<"messages">) => {
-  const { data: createdMessage, error } = await supabase
+  const createdMessage = await dbClient
     .from("messages")
     .insert([message])
     .select("*")
@@ -43,7 +43,7 @@ export const createMessage = async (message: TablesInsert<"messages">) => {
 }
 
 export const createMessages = async (messages: TablesInsert<"messages">[]) => {
-  const { data: createdMessages, error } = await supabase
+  const createdMessages = await dbClient
     .from("messages")
     .insert(messages)
     .select("*")
@@ -59,7 +59,7 @@ export const updateMessage = async (
   messageId: string,
   message: TablesUpdate<"messages">
 ) => {
-  const { data: updatedMessage, error } = await supabase
+  const updatedMessage = await dbClient
     .from("messages")
     .update(message)
     .eq("id", messageId)
@@ -74,7 +74,7 @@ export const updateMessage = async (
 }
 
 export const deleteMessage = async (messageId: string) => {
-  const { error } = await supabase.from("messages").delete().eq("id", messageId)
+  const { error } = await dbClient.from("messages").delete().eq("id", messageId)
 
   if (error) {
     throw new Error("Database operation failed")
@@ -88,7 +88,7 @@ export async function deleteMessagesIncludingAndAfter(
   chatId: string,
   sequenceNumber: number
 ) {
-  const { error } = await supabase.rpc("delete_messages_including_and_after", {
+  const { error } = await dbClient.rpc("delete_messages_including_and_after", {
     p_user_id: userId,
     p_chat_id: chatId,
     p_sequence_number: sequenceNumber

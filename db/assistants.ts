@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getAssistantById = async (assistantId: string) => {
-  const { data: assistant, error } = await supabase
+  const assistant = await dbClient
     .from("assistants")
     .select("*")
     .eq("id", assistantId)
@@ -18,7 +18,7 @@ export const getAssistantById = async (assistantId: string) => {
 export const getAssistantWorkspacesByWorkspaceId = async (
   workspaceId: string
 ) => {
-  const { data: workspace, error } = await supabase
+  const workspace = await dbClient
     .from("workspaces")
     .select(
       `
@@ -40,7 +40,7 @@ export const getAssistantWorkspacesByWorkspaceId = async (
 export const getAssistantWorkspacesByAssistantId = async (
   assistantId: string
 ) => {
-  const { data: assistant, error } = await supabase
+  const assistant = await dbClient
     .from("assistants")
     .select(
       `
@@ -63,7 +63,7 @@ export const createAssistant = async (
   assistant: TablesInsert<"assistants">,
   workspace_id: string
 ) => {
-  const { data: createdAssistant, error } = await supabase
+  const createdAssistant = await dbClient
     .from("assistants")
     .insert([assistant])
     .select("*")
@@ -86,7 +86,7 @@ export const createAssistants = async (
   assistants: TablesInsert<"assistants">[],
   workspace_id: string
 ) => {
-  const { data: createdAssistants, error } = await supabase
+  const createdAssistants = await dbClient
     .from("assistants")
     .insert(assistants)
     .select("*")
@@ -111,7 +111,7 @@ export const createAssistantWorkspace = async (item: {
   assistant_id: string
   workspace_id: string
 }) => {
-  const { data: createdAssistantWorkspace, error } = await supabase
+  const createdAssistantWorkspace = await dbClient
     .from("assistant_workspaces")
     .insert([item])
     .select("*")
@@ -127,7 +127,7 @@ export const createAssistantWorkspace = async (item: {
 export const createAssistantWorkspaces = async (
   items: { user_id: string; assistant_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdAssistantWorkspaces, error } = await supabase
+  const createdAssistantWorkspaces = await dbClient
     .from("assistant_workspaces")
     .insert(items)
     .select("*")
@@ -141,7 +141,7 @@ export const updateAssistant = async (
   assistantId: string,
   assistant: TablesUpdate<"assistants">
 ) => {
-  const { data: updatedAssistant, error } = await supabase
+  const updatedAssistant = await dbClient
     .from("assistants")
     .update(assistant)
     .eq("id", assistantId)
@@ -156,7 +156,7 @@ export const updateAssistant = async (
 }
 
 export const deleteAssistant = async (assistantId: string) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("assistants")
     .delete()
     .eq("id", assistantId)
@@ -172,7 +172,7 @@ export const deleteAssistantWorkspace = async (
   assistantId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
+  const { error } = await dbClient
     .from("assistant_workspaces")
     .delete()
     .eq("assistant_id", assistantId)
