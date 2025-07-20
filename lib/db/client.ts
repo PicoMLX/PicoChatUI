@@ -18,35 +18,63 @@ export class DatabaseClient {
                 queryConditions[column] = value
                 return {
                   single: async () => {
-                    // Return just the data for .single() calls
+                    // Always return { data, error } format for .single() calls
                     if (table === "profiles" && queryConditions.user_id) {
                       return {
-                        id: "mock-profile-id",
-                        user_id: queryConditions.user_id,
-                        created_at: "2024-01-01T00:00:00Z",
-                        updated_at: "2024-01-01T00:00:00Z",
-                        display_name: "Mock User",
-                        username: "mockuser",
-                        bio: "Mock user bio",
-                        profile_context: "Mock profile context",
-                        has_onboarded: true,
-                        image_url: "",
-                        image_path: "",
-                        anthropic_api_key: "",
-                        azure_openai_35_turbo_id: "",
-                        azure_openai_45_turbo_id: "",
-                        azure_openai_45_vision_id: "",
-                        azure_openai_api_key: "",
-                        azure_openai_endpoint: "",
-                        azure_openai_embeddings_id: "",
-                        google_gemini_api_key: "",
-                        mistral_api_key: "",
-                        openai_api_key: "",
-                        openai_organization_id: "",
-                        perplexity_api_key: "",
-                        groq_api_key: "",
-                        openrouter_api_key: "",
-                        use_azure_openai: false
+                        data: {
+                          id: "mock-profile-id",
+                          user_id: queryConditions.user_id,
+                          created_at: "2024-01-01T00:00:00Z",
+                          updated_at: "2024-01-01T00:00:00Z",
+                          display_name: "Mock User",
+                          username: "mockuser",
+                          bio: "Mock user bio",
+                          profile_context: "Mock profile context",
+                          has_onboarded: true,
+                          image_url: "",
+                          image_path: "",
+                          anthropic_api_key: "",
+                          azure_openai_35_turbo_id: "",
+                          azure_openai_45_turbo_id: "",
+                          azure_openai_45_vision_id: "",
+                          azure_openai_api_key: "",
+                          azure_openai_endpoint: "",
+                          azure_openai_embeddings_id: "",
+                          google_gemini_api_key: "",
+                          mistral_api_key: "",
+                          openai_api_key: "",
+                          openai_organization_id: "",
+                          perplexity_api_key: "",
+                          groq_api_key: "",
+                          openrouter_api_key: "",
+                          use_azure_openai: false
+                        },
+                        error: null
+                      }
+                    }
+                    if (table === "workspaces" && queryConditions.id) {
+                      return {
+                        data: {
+                          id: queryConditions.id,
+                          name: "Mock Workspace",
+                          user_id: "mock-user-id",
+                          created_at: "2024-01-01T00:00:00Z",
+                          updated_at: "2024-01-01T00:00:00Z",
+                          description: "Mock workspace description",
+                          instructions: "Mock workspace instructions",
+                          image_url: "",
+                          image_path: "",
+                          is_home: false,
+                          include_profile_context: true,
+                          include_workspace_instructions: true,
+                          default_context_length: 4096,
+                          default_model: "gpt-4-1106-preview",
+                          default_prompt:
+                            "You are a friendly, helpful AI assistant.",
+                          default_temperature: 0.5,
+                          embeddings_provider: "openai"
+                        },
+                        error: null
                       }
                     }
                     if (
@@ -232,56 +260,92 @@ export class DatabaseClient {
                 }
               },
               single: async () => {
-                // Return just the data for .single() calls
+                // Always return { data, error } format for .single() calls
                 if (table === "profiles" && queryConditions.user_id) {
                   return {
-                    id: "mock-profile-id",
-                    user_id: queryConditions.user_id,
-                    created_at: "2024-01-01T00:00:00Z",
-                    updated_at: "2024-01-01T00:00:00Z",
-                    display_name: "Mock User",
-                    username: "mockuser",
-                    bio: "Mock user bio",
-                    profile_context: "Mock profile context",
-                    has_onboarded: true,
-                    image_url: "",
-                    image_path: "",
-                    anthropic_api_key: "",
-                    azure_openai_35_turbo_id: "",
-                    azure_openai_45_turbo_id: "",
-                    azure_openai_45_vision_id: "",
-                    azure_openai_api_key: "",
-                    azure_openai_endpoint: "",
-                    azure_openai_embeddings_id: "",
-                    google_gemini_api_key: "",
-                    mistral_api_key: "",
-                    openai_api_key: "",
-                    openai_organization_id: "",
-                    perplexity_api_key: "",
-                    groq_api_key: "",
-                    openrouter_api_key: "",
-                    use_azure_openai: false
+                    data: {
+                      id: "mock-profile-id",
+                      user_id: queryConditions.user_id,
+                      created_at: "2024-01-01T00:00:00Z",
+                      updated_at: "2024-01-01T00:00:00Z",
+                      display_name: "Mock User",
+                      username: "mockuser",
+                      bio: "Mock user bio",
+                      profile_context: "Mock profile context",
+                      has_onboarded: true,
+                      image_url: "",
+                      image_path: "",
+                      anthropic_api_key: "",
+                      azure_openai_35_turbo_id: "",
+                      azure_openai_45_turbo_id: "",
+                      azure_openai_45_vision_id: "",
+                      azure_openai_api_key: "",
+                      azure_openai_endpoint: "",
+                      azure_openai_embeddings_id: "",
+                      google_gemini_api_key: "",
+                      mistral_api_key: "",
+                      openai_api_key: "",
+                      openai_organization_id: "",
+                      perplexity_api_key: "",
+                      groq_api_key: "",
+                      openrouter_api_key: "",
+                      use_azure_openai: false
+                    },
+                    error: null
                   }
                 }
                 if (table === "workspaces" && queryConditions.id) {
+                  // Check if this is a query with assistants join
+                  if (columns.includes("assistants")) {
+                    return {
+                      data: {
+                        assistants: [
+                          {
+                            id: "mock-assistant-id",
+                            user_id: "mock-user-id",
+                            folder_id: null,
+                            created_at: "2024-01-01T00:00:00Z",
+                            updated_at: "2024-01-01T00:00:00Z",
+                            name: "Mock Assistant",
+                            description: "Mock assistant description",
+                            instructions: "Mock assistant instructions",
+                            image_url: null,
+                            image_path: "",
+                            context_length: 4096,
+                            embeddings_provider: "openai",
+                            include_profile_context: true,
+                            include_workspace_instructions: true,
+                            model: "gpt-4-1106-preview",
+                            prompt: "You are a friendly, helpful AI assistant.",
+                            temperature: 0.5
+                          }
+                        ]
+                      },
+                      error: null
+                    }
+                  }
                   return {
-                    id: queryConditions.id,
-                    name: "Mock Workspace",
-                    user_id: "mock-user-id",
-                    created_at: "2024-01-01T00:00:00Z",
-                    updated_at: "2024-01-01T00:00:00Z",
-                    description: "Mock workspace description",
-                    instructions: "Mock workspace instructions",
-                    image_url: "",
-                    image_path: "",
-                    is_home: false,
-                    include_profile_context: true,
-                    include_workspace_instructions: true,
-                    default_context_length: 4096,
-                    default_model: "gpt-4-1106-preview",
-                    default_prompt: "You are a friendly, helpful AI assistant.",
-                    default_temperature: 0.5,
-                    embeddings_provider: "openai"
+                    data: {
+                      id: queryConditions.id,
+                      name: "Mock Workspace",
+                      user_id: "mock-user-id",
+                      created_at: "2024-01-01T00:00:00Z",
+                      updated_at: "2024-01-01T00:00:00Z",
+                      description: "Mock workspace description",
+                      instructions: "Mock workspace instructions",
+                      image_url: "",
+                      image_path: "",
+                      is_home: false,
+                      include_profile_context: true,
+                      include_workspace_instructions: true,
+                      default_context_length: 4096,
+                      default_model: "gpt-4-1106-preview",
+                      default_prompt:
+                        "You are a friendly, helpful AI assistant.",
+                      default_temperature: 0.5,
+                      embeddings_provider: "openai"
+                    },
+                    error: null
                   }
                 }
                 return { id: "mock-id", name: "mock-name" }
