@@ -23,12 +23,27 @@ struct NPMBuildPlugin: BuildToolPlugin {
         // Define output files - these are the files that the build script will generate
         let buildOutputDir = context.package.directoryURL.appending(components: "Sources/PicoChatUI/build")
         
+        // Get the current environment and ensure PATH includes common Node.js locations
+        var environment = ProcessInfo.processInfo.environment
+        let nodePaths = [
+            "/opt/homebrew/opt/node@22/bin",
+            "/opt/homebrew/bin",
+            "/usr/local/bin"
+        ]
+        
+        if let currentPath = environment["PATH"] {
+            let additionalPaths = nodePaths.joined(separator: ":")
+            environment["PATH"] = "\(additionalPaths):\(currentPath)"
+        } else {
+            environment["PATH"] = nodePaths.joined(separator: ":")
+        }
+        
         return [
             .prebuildCommand(
                 displayName: "Running npm build for frontend",
                 executable: buildShellPath,
-                arguments: [scriptPath.path()],
-                environment: [:],
+                arguments: [scriptPath.path(percentEncoded: false)],
+                environment: environment,
                 outputFilesDirectory: outputDir
             )
         ]
