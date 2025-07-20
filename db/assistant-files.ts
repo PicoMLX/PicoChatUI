@@ -21,9 +21,7 @@ export const getAssistantFilesByAssistantId = async (assistantId: string) => {
   return assistantFiles
 }
 
-export const createAssistantFile = async (
-  assistantFile: TablesInsert<"assistant_files">
-) => {
+export const createAssistantFile = async (assistantFile: any) => {
   const { data: createdAssistantFile, error } = await supabase
     .from("assistant_files")
     .insert(assistantFile)
