@@ -6,7 +6,13 @@ import { updateChat } from "@/db/chats"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { deleteMessagesIncludingAndAfter } from "@/db/messages"
 import { buildFinalMessages } from "@/lib/build-prompt"
-import { Tables } from "@/supabase/types"
+import {
+  Tables,
+  AssistantFilesResponse,
+  AssistantCollectionsResponse,
+  AssistantToolsResponse,
+  CollectionFilesResponse
+} from "@/supabase/types"
 import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useRef } from "react"
@@ -113,25 +119,30 @@ export const useChatHandler = () => {
 
       let allFiles = []
 
-      const assistantFiles =
-        ((await getAssistantFilesByAssistantId(selectedAssistant.id)) as any)
-          .files || []
+      const { data: assistantFilesData } =
+        (await getAssistantFilesByAssistantId(
+          selectedAssistant.id
+        )) as AssistantFilesResponse
+      const assistantFiles = assistantFilesData.files || []
       allFiles = [...assistantFiles]
-      const assistantCollections =
-        (
-          (await getAssistantCollectionsByAssistantId(
-            selectedAssistant.id
-          )) as any
-        ).collections || []
+      const { data: assistantCollectionsData } =
+        (await getAssistantCollectionsByAssistantId(
+          selectedAssistant.id
+        )) as AssistantCollectionsResponse
+      const assistantCollections = assistantCollectionsData.collections || []
       for (const collection of assistantCollections) {
-        const collectionFiles =
-          ((await getCollectionFilesByCollectionId(collection.id)) as any)
-            .files || []
+        const { data: collectionFilesData } =
+          (await getCollectionFilesByCollectionId(
+            collection.id
+          )) as CollectionFilesResponse
+        const collectionFiles = collectionFilesData.files || []
         allFiles = [...allFiles, ...collectionFiles]
       }
-      const assistantTools =
-        ((await getAssistantToolsByAssistantId(selectedAssistant.id)) as any)
-          .tools || []
+      const { data: assistantToolsData } =
+        (await getAssistantToolsByAssistantId(
+          selectedAssistant.id
+        )) as AssistantToolsResponse
+      const assistantTools = assistantToolsData.tools || []
 
       setSelectedTools(assistantTools)
       setChatFiles(

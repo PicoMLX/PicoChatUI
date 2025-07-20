@@ -78,6 +78,43 @@ export interface Database {
   }
 }
 
+// API Response Types for database client responses
+export interface AssistantFilesResponse {
+  data: {
+    files: FileRow[]
+  }
+}
+
+export interface AssistantCollectionsResponse {
+  data: {
+    collections: CollectionRow[]
+  }
+}
+
+export interface AssistantToolsResponse {
+  data: {
+    tools: ToolRow[]
+  }
+}
+
+export interface CollectionFilesResponse {
+  data: {
+    files: FileRow[]
+  }
+}
+
+export interface MessageFileItemsResponse {
+  data: {
+    file_items: FileItemRow[]
+  }
+}
+
+export interface ChatFilesResponse {
+  data: {
+    files: FileRow[]
+  }
+}
+
 // Table row types
 export interface ProfileRow {
   id: string

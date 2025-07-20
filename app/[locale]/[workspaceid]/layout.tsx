@@ -103,14 +103,14 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const fetchWorkspaceData = async (workspaceId: string) => {
     setLoading(true)
 
-    const workspace = (await getWorkspaceById(workspaceId)) as {
+    const { data: workspace } = (await getWorkspaceById(workspaceId)) as {
       data: WorkspaceRow
     }
     setSelectedWorkspace(workspace)
 
-    const assistantData = (await getAssistantWorkspacesByWorkspaceId(
+    const { data: assistantData } = (await getAssistantWorkspacesByWorkspaceId(
       workspaceId
-    )) as { assistants: AssistantRow[] }
+    )) as { data: { assistants: AssistantRow[] } }
     setAssistants(assistantData.assistants || [])
 
     for (const assistant of assistantData.assistants || []) {
@@ -150,36 +150,43 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     const chats = (await getChatsByWorkspaceId(workspaceId)) as ChatRow[]
     setChats(chats)
 
-    const collectionData = (await getCollectionWorkspacesByWorkspaceId(
-      workspaceId
-    )) as { collections: CollectionRow[] }
+    const { data: collectionData } =
+      (await getCollectionWorkspacesByWorkspaceId(workspaceId)) as {
+        data: { collections: CollectionRow[] }
+      }
     setCollections(collectionData.collections || [])
 
     const folders = (await getFoldersByWorkspaceId(workspaceId)) as FolderRow[]
     setFolders(folders || [])
 
-    const fileData = (await getFileWorkspacesByWorkspaceId(workspaceId)) as {
-      files: FileRow[]
+    const { data: fileData } = (await getFileWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { files: FileRow[] }
     }
     setFiles(fileData.files || [])
 
-    const presetData = (await getPresetWorkspacesByWorkspaceId(
+    const { data: presetData } = (await getPresetWorkspacesByWorkspaceId(
       workspaceId
-    )) as { presets: PresetRow[] }
+    )) as { data: { presets: PresetRow[] } }
     setPresets(presetData.presets || [])
 
-    const promptData = (await getPromptWorkspacesByWorkspaceId(
+    const { data: promptData } = (await getPromptWorkspacesByWorkspaceId(
       workspaceId
-    )) as { prompts: PromptRow[] }
+    )) as { data: { prompts: PromptRow[] } }
     setPrompts(promptData.prompts || [])
 
-    const toolData = (await getToolWorkspacesByWorkspaceId(workspaceId)) as {
-      tools: ToolRow[]
+    const { data: toolData } = (await getToolWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { tools: ToolRow[] }
     }
     setTools(toolData.tools || [])
 
-    const modelData = (await getModelWorkspacesByWorkspaceId(workspaceId)) as {
-      models: ModelRow[]
+    const { data: modelData } = (await getModelWorkspacesByWorkspaceId(
+      workspaceId
+    )) as {
+      data: { models: ModelRow[] }
     }
     setModels(modelData.models || [])
 

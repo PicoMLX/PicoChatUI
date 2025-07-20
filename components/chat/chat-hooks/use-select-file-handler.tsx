@@ -109,15 +109,15 @@ export const useSelectFileHandler = () => {
             chatSettings.embeddingsProvider
           )
 
-          setFiles(prev => [...prev, createdFile as any])
+          setFiles(prev => [...prev, createdFile])
 
           setNewMessageFiles(prev =>
             prev.map(item =>
               item.id === "loading"
                 ? {
-                    id: (createdFile as any).id,
-                    name: (createdFile as any).name,
-                    type: (createdFile as any).type,
+                    id: createdFile.id,
+                    name: createdFile.name,
+                    type: createdFile.type,
                     file: file
                   }
                 : item
@@ -171,15 +171,15 @@ export const useSelectFileHandler = () => {
               chatSettings.embeddingsProvider
             )
 
-            setFiles(prev => [...prev, createdFile as any])
+            setFiles(prev => [...prev, createdFile])
 
             setNewMessageFiles(prev =>
               prev.map(item =>
                 item.id === "loading"
                   ? {
-                      id: (createdFile as any).id,
-                      name: (createdFile as any).name,
-                      type: (createdFile as any).type,
+                      id: createdFile.id,
+                      name: createdFile.name,
+                      type: createdFile.type,
                       file: file
                     }
                   : item

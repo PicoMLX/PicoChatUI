@@ -10,6 +10,11 @@ import { getMessageImageFromStorage } from "@/db/storage/message-images"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { LLMID, MessageImage } from "@/types"
+import {
+  AssistantToolsResponse,
+  MessageFileItemsResponse,
+  ChatFilesResponse
+} from "@/supabase/types"
 import { useParams } from "next/navigation"
 import { FC, useContext, useEffect, useState } from "react"
 import { ChatHelp } from "./chat-help"
@@ -119,15 +124,17 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
     const messageFileItems = await Promise.all(messageFileItemPromises)
 
-    const uniqueFileItems = messageFileItems.flatMap(
-      item => (item as any).file_items || []
-    )
+    const uniqueFileItems = messageFileItems.flatMap(item => {
+      const { data: messageFileItemsData } = item as MessageFileItemsResponse
+      return messageFileItemsData.file_items
+    })
     setChatFileItems(uniqueFileItems)
 
     const chatFiles = await getChatFilesByChatId(params.chatid as string)
 
+    const { data: chatFilesData } = chatFiles as ChatFilesResponse
     setChatFiles(
-      ((chatFiles as any).files || []).map((file: any) => ({
+      chatFilesData.files.map(file => ({
         id: file.id,
         name: file.name,
         type: file.type,
@@ -142,15 +149,16 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       return {
         message,
         fileItems: messageFileItems
-          .filter(
-            messageFileItem =>
-              (messageFileItem as any).id === (message as any).id
-          )
-          .flatMap(messageFileItem =>
-            ((messageFileItem as any).file_items || []).map(
-              (fileItem: any) => fileItem.id
-            )
-          )
+          .filter(messageFileItem => {
+            const { data: messageFileItemsData } =
+              messageFileItem as MessageFileItemsResponse
+            return messageFileItemsData.id === message.id
+          })
+          .flatMap(messageFileItem => {
+            const { data: messageFileItemsData } =
+              messageFileItem as MessageFileItemsResponse
+            return messageFileItemsData.file_items.map(fileItem => fileItem.id)
+          })
       }
     })
 
@@ -169,9 +177,11 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       if (assistant) {
         setSelectedAssistant(assistant)
 
-        const assistantTools =
-          ((await getAssistantToolsByAssistantId(assistant.id)) as any).tools ||
-          []
+        const { data: assistantToolsData } =
+          (await getAssistantToolsByAssistantId(
+            assistant.id
+          )) as AssistantToolsResponse
+        const assistantTools = assistantToolsData.tools
         setSelectedTools(assistantTools)
       }
     }
