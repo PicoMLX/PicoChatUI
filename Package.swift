@@ -41,7 +41,7 @@ let package = Package(
             ],
             path: "Sources/PicoChatUIServer",
             plugins: [
-                .plugin(name: "NPMBuildPlugin")
+//                .plugin(name: "NPMBuildPlugin")
             ]
         ),
         .target(
@@ -67,10 +67,10 @@ let package = Package(
                 .enableUpcomingFeature("StrictConcurrency"),
             ]
         ),
-        .plugin(
-            name: "NPMBuildPlugin",
-            capability: .buildTool(),
-            path: "Plugins/PMBuildPlugin"
-        ),
+//        .plugin(
+//            name: "NPMBuildPlugin",
+//            capability: .buildTool(),
+//            path: "Plugins/PMBuildPlugin"
+//        ),
     ]
 )
