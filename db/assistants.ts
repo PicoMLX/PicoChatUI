@@ -63,15 +63,9 @@ export const createAssistant = async (
   assistant: TablesInsert<"assistants">,
   workspace_id: string
 ) => {
-  const createdAssistant = await dbClient
-    .from("assistants")
-    .insert([assistant])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 
   await createAssistantWorkspace({
     user_id: createdAssistant.user_id,

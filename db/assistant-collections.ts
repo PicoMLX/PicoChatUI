@@ -1,4 +1,20 @@
 import { dbClient } from "@/lib/db/client"
+import { apiPost, withAuth } from "@/lib/api/client"
+
+// Assistant Collections interface for the many-to-many relationship
+export interface AssistantCollectionRow {
+  id: string
+  assistant_id: string
+  collection_id: string
+  user_id: string
+  created_at: string
+  updated_at: string
+}
+
+export type AssistantCollectionInsert = Omit<
+  AssistantCollectionRow,
+  "id" | "created_at" | "updated_at"
+>
 export const getAssistantCollectionsByAssistantId = async (
   assistantId: string
 ) => {
@@ -21,32 +37,54 @@ export const getAssistantCollectionsByAssistantId = async (
   return assistantCollections
 }
 
-export const createAssistantCollection = async (assistantCollection: any) => {
-  const createdAssistantCollection = await dbClient
-    .from("assistant_collections")
-    .insert(assistantCollection)
-    .select("*")
+export const createAssistantCollection = async (
+  assistantCollection: AssistantCollectionInsert,
+  authToken?: string
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  // Authentication token is passed per-request for security
+  const response = await apiPost<AssistantCollectionRow>(
+    "/api/assistant-collections",
+    assistantCollection,
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (!createdAssistantCollection) {
-    throw new Error("Failed to create assistant collection")
+  if (response.error) {
+    throw new Error(
+      `Failed to create assistant collection: ${response.error.message}`
+    )
   }
 
-  return createdAssistantCollection
+  if (!response.data) {
+    throw new Error("Failed to create assistant collection: No data returned")
+  }
+
+  return { data: response.data, error: null }
 }
 
 export const createAssistantCollections = async (
-  assistantCollections: any[]
+  assistantCollections: AssistantCollectionInsert[],
+  authToken?: string
 ) => {
-  const createdAssistantCollections = await dbClient
-    .from("assistant_collections")
-    .insert(assistantCollections)
-    .select("*")
+  // REST-native API call to Swift Hummingbird backend - batch creation
+  // Authentication token is passed per-request for security
+  const response = await apiPost<AssistantCollectionRow[]>(
+    "/api/assistant-collections/batch",
+    { items: assistantCollections },
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (!createdAssistantCollections) {
-    throw new Error("Failed to create assistant collections")
+  if (response.error) {
+    throw new Error(
+      `Failed to create assistant collections: ${response.error.message}`
+    )
   }
 
-  return createdAssistantCollections
+  if (!response.data) {
+    throw new Error("Failed to create assistant collections: No data returned")
+  }
+
+  return { data: response.data, error: null }
 }
 
 export const deleteAssistantCollection = async (

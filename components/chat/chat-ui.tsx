@@ -13,7 +13,8 @@ import { LLMID, MessageImage } from "@/types"
 import {
   AssistantToolsResponse,
   MessageFileItemsResponse,
-  ChatFilesResponse
+  ChatFilesResponse,
+  FileItemRow
 } from "@/supabase/types"
 import { useParams } from "next/navigation"
 import { FC, useContext, useEffect, useState } from "react"
@@ -147,7 +148,9 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
         fileItems: messageFileItems
           .filter(messageFileItem => messageFileItem.id === message.id)
           .flatMap(messageFileItem =>
-            messageFileItem.file_items.map(fileItem => fileItem.id)
+            messageFileItem.file_items.map(
+              (fileItem: FileItemRow) => fileItem.id
+            )
           )
       }
     })
