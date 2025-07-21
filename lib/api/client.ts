@@ -17,16 +17,8 @@ export class HttpError extends Error {
   }
 }
 
-// Authentication token management
-let authToken: string | null = null
-
-export const setAuthToken = (token: string | null) => {
-  authToken = token
-}
-
-export const getAuthToken = (): string | null => {
-  return authToken
-}
+// Authentication is now handled per-request via headers
+// No global token storage for security reasons
 
 // Generic HTTP client interface
 export interface HttpClientOptions {
@@ -70,10 +62,8 @@ export class RestHttpClient {
       ...options.headers
     }
 
-    // Add authentication header if token is available
-    if (authToken) {
-      headers["Authorization"] = `Bearer ${authToken}`
-    }
+    // Authentication tokens should be passed via options.headers
+    // Example: { headers: { 'Authorization': 'Bearer your-token' } }
 
     const requestConfig: RequestInit = {
       method,
@@ -187,13 +177,45 @@ export class RestHttpClient {
 export const httpClient = new RestHttpClient()
 
 // Convenience functions for common patterns
-export const apiGet = <T>(endpoint: string, params?: Record<string, any>) =>
-  httpClient.get<T>(endpoint, params)
+// Helper function to create authenticated headers
+export const createAuthHeaders = (token: string): Record<string, string> => ({
+  Authorization: `Bearer ${token}`
+})
 
-export const apiPost = <T>(endpoint: string, data?: any) =>
-  httpClient.post<T>(endpoint, data)
+// Helper function to create HttpClientOptions with auth
+export const withAuth = (
+  token: string,
+  additionalOptions?: HttpClientOptions
+): HttpClientOptions => ({
+  ...additionalOptions,
+  headers: {
+    ...additionalOptions?.headers,
+    ...createAuthHeaders(token)
+  }
+})
 
-export const apiPut = <T>(endpoint: string, data?: any) =>
-  httpClient.put<T>(endpoint, data)
+// Convenience functions for common patterns
+// For authenticated requests, use helpers:
+// apiGet('/endpoint', {}, withAuth(token))
+// or manually: apiGet('/endpoint', {}, { headers: { 'Authorization': 'Bearer token' } })
 
-export const apiDelete = <T>(endpoint: string) => httpClient.delete<T>(endpoint)
+export const apiGet = <T>(
+  endpoint: string,
+  params?: Record<string, any>,
+  options?: HttpClientOptions
+) => httpClient.get<T>(endpoint, params, options)
+
+export const apiPost = <T>(
+  endpoint: string,
+  data?: any,
+  options?: HttpClientOptions
+) => httpClient.post<T>(endpoint, data, options)
+
+export const apiPut = <T>(
+  endpoint: string,
+  data?: any,
+  options?: HttpClientOptions
+) => httpClient.put<T>(endpoint, data, options)
+
+export const apiDelete = <T>(endpoint: string, options?: HttpClientOptions) =>
+  httpClient.delete<T>(endpoint, options)

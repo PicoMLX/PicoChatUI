@@ -1,5 +1,5 @@
 import { dbClient } from "@/lib/db/client"
-import { apiPost } from "@/lib/api/client"
+import { apiPost, withAuth } from "@/lib/api/client"
 
 // Assistant Collections interface for the many-to-many relationship
 export interface AssistantCollectionRow {
@@ -38,12 +38,15 @@ export const getAssistantCollectionsByAssistantId = async (
 }
 
 export const createAssistantCollection = async (
-  assistantCollection: AssistantCollectionInsert
+  assistantCollection: AssistantCollectionInsert,
+  authToken?: string
 ) => {
   // REST-native API call to Swift Hummingbird backend
+  // Authentication token is passed per-request for security
   const response = await apiPost<AssistantCollectionRow>(
     "/api/assistant-collections",
-    assistantCollection
+    assistantCollection,
+    authToken ? withAuth(authToken) : undefined
   )
 
   if (response.error) {
@@ -60,12 +63,15 @@ export const createAssistantCollection = async (
 }
 
 export const createAssistantCollections = async (
-  assistantCollections: AssistantCollectionInsert[]
+  assistantCollections: AssistantCollectionInsert[],
+  authToken?: string
 ) => {
   // REST-native API call to Swift Hummingbird backend - batch creation
+  // Authentication token is passed per-request for security
   const response = await apiPost<AssistantCollectionRow[]>(
     "/api/assistant-collections/batch",
-    { items: assistantCollections }
+    { items: assistantCollections },
+    authToken ? withAuth(authToken) : undefined
   )
 
   if (response.error) {
