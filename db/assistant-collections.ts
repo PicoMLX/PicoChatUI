@@ -1,4 +1,20 @@
 import { dbClient } from "@/lib/db/client"
+import { apiPost } from "@/lib/api/client"
+
+// Assistant Collections interface for the many-to-many relationship
+export interface AssistantCollectionRow {
+  id: string
+  assistant_id: string
+  collection_id: string
+  user_id: string
+  created_at: string
+  updated_at: string
+}
+
+export type AssistantCollectionInsert = Omit<
+  AssistantCollectionRow,
+  "id" | "created_at" | "updated_at"
+>
 export const getAssistantCollectionsByAssistantId = async (
   assistantId: string
 ) => {
@@ -21,32 +37,48 @@ export const getAssistantCollectionsByAssistantId = async (
   return assistantCollections
 }
 
-export const createAssistantCollection = async (assistantCollection: any) => {
-  const createdAssistantCollection = await dbClient
-    .from("assistant_collections")
-    .insert(assistantCollection)
-    .select("*")
+export const createAssistantCollection = async (
+  assistantCollection: AssistantCollectionInsert
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiPost<AssistantCollectionRow>(
+    "/api/assistant-collections",
+    assistantCollection
+  )
 
-  if (!createdAssistantCollection) {
-    throw new Error("Failed to create assistant collection")
+  if (response.error) {
+    throw new Error(
+      `Failed to create assistant collection: ${response.error.message}`
+    )
   }
 
-  return createdAssistantCollection
+  if (!response.data) {
+    throw new Error("Failed to create assistant collection: No data returned")
+  }
+
+  return { data: response.data, error: null }
 }
 
 export const createAssistantCollections = async (
-  assistantCollections: any[]
+  assistantCollections: AssistantCollectionInsert[]
 ) => {
-  const createdAssistantCollections = await dbClient
-    .from("assistant_collections")
-    .insert(assistantCollections)
-    .select("*")
+  // REST-native API call to Swift Hummingbird backend - batch creation
+  const response = await apiPost<AssistantCollectionRow[]>(
+    "/api/assistant-collections/batch",
+    { items: assistantCollections }
+  )
 
-  if (!createdAssistantCollections) {
-    throw new Error("Failed to create assistant collections")
+  if (response.error) {
+    throw new Error(
+      `Failed to create assistant collections: ${response.error.message}`
+    )
   }
 
-  return createdAssistantCollections
+  if (!response.data) {
+    throw new Error("Failed to create assistant collections: No data returned")
+  }
+
+  return { data: response.data, error: null }
 }
 
 export const deleteAssistantCollection = async (
