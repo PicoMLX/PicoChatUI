@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:PicoChatUI}",
+            "name": "Debug PicoChatUIServer",
+            "program": "${workspaceFolder:PicoChatUI}/.build/debug/PicoChatUIServer",
+            "preLaunchTask": "swift: Build Debug PicoChatUIServer"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:PicoChatUI}",
+            "name": "Release PicoChatUIServer",
+            "program": "${workspaceFolder:PicoChatUI}/.build/release/PicoChatUIServer",
+            "preLaunchTask": "swift: Build Release PicoChatUIServer"
+        }
+    ]
+}

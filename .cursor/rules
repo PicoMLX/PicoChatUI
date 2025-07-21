@@ -1,5 +1,14 @@
 # Cursor Rules for TypeScript Development
 
+## Goal
+
+We're porting the original project, which you can find in the `ORIGINAL PROJECT` directory in the root 
+repo directory to a Swift Hummingbird server. For that purpose, we've removed the Next.js server component
+and Supabase.
+The front-end end works well and you should treat the front-end in the `ORIGINAL PROJECT` as the source of truth.
+Only edit the front-end files when absolutely necessary. When in doubt, consult the files in the
+`ORINIGNAL PROJECT` directory.
+
 ## Type Safety Rules
 
 ### NEVER Use `any` Type Casts

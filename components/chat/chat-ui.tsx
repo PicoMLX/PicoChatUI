@@ -124,17 +124,13 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
     const messageFileItems = await Promise.all(messageFileItemPromises)
 
-    const uniqueFileItems = messageFileItems.flatMap(item => {
-      const { data: messageFileItemsData } = item as MessageFileItemsResponse
-      return messageFileItemsData.file_items
-    })
+    const uniqueFileItems = messageFileItems.flatMap(item => item.file_items)
     setChatFileItems(uniqueFileItems)
 
     const chatFiles = await getChatFilesByChatId(params.chatid as string)
 
-    const { data: chatFilesData } = chatFiles as ChatFilesResponse
     setChatFiles(
-      chatFilesData.files.map(file => ({
+      chatFiles.files.map(file => ({
         id: file.id,
         name: file.name,
         type: file.type,
@@ -149,16 +145,10 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       return {
         message,
         fileItems: messageFileItems
-          .filter(messageFileItem => {
-            const { data: messageFileItemsData } =
-              messageFileItem as MessageFileItemsResponse
-            return messageFileItemsData.id === message.id
-          })
-          .flatMap(messageFileItem => {
-            const { data: messageFileItemsData } =
-              messageFileItem as MessageFileItemsResponse
-            return messageFileItemsData.file_items.map(fileItem => fileItem.id)
-          })
+          .filter(messageFileItem => messageFileItem.id === message.id)
+          .flatMap(messageFileItem =>
+            messageFileItem.file_items.map(fileItem => fileItem.id)
+          )
       }
     })
 
@@ -177,11 +167,9 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       if (assistant) {
         setSelectedAssistant(assistant)
 
-        const { data: assistantToolsData } =
-          (await getAssistantToolsByAssistantId(
-            assistant.id
-          )) as AssistantToolsResponse
-        const assistantTools = assistantToolsData.tools
+        const assistantTools = (
+          await getAssistantToolsByAssistantId(assistant.id)
+        ).tools
         setSelectedTools(assistantTools)
       }
     }
