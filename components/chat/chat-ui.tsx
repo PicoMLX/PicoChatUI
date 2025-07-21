@@ -147,7 +147,7 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
         fileItems: messageFileItems
           .filter(messageFileItem => messageFileItem.id === message.id)
           .flatMap(messageFileItem =>
-            messageFileItem.file_items.map(fileItem => fileItem.id)
+            messageFileItem.file_items.map((fileItem: any) => fileItem.id)
           )
       }
     })
