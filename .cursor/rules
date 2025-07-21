@@ -7,7 +7,28 @@ repo directory to a Swift Hummingbird server. For that purpose, we've removed th
 and Supabase.
 The front-end end works well and you should treat the front-end in the `ORIGINAL PROJECT` as the source of truth.
 Only edit the front-end files when absolutely necessary. When in doubt, consult the files in the
-`ORINIGNAL PROJECT` directory.
+`ORIGINAL PROJECT` directory.
+
+## Architecture Migration
+
+### Current State
+- Frontend uses `db/*.ts` functions that currently call a mock client (`lib/db/client.ts`)
+- Target: Replace mock client with HTTP API calls to Swift Hummingbird server
+- **REST-Native Design**: Use simple, clean REST endpoints instead of forcing REST to mimic Supabase's complex query builder
+
+### Migration Constraints
+- **KEEP db/*.ts function signatures EXACTLY the same** - frontend depends on these stable interfaces
+- **DO NOT modify frontend code** - it should continue calling the same database functions
+- **DO NOT change return types** of database functions in db/*.ts
+- **DESIGN REST-NATIVE APIs** - simple HTTP endpoints instead of complex query builders
+- **Migrate one function at a time** to minimize risk and enable incremental testing
+
+### REST-Native Design Principles
+- Use simple, intuitive REST endpoints that are easy to implement in Swift
+- Prefer query parameters over complex chained methods
+- Design clean HTTP methods (GET, POST, PUT, DELETE) instead of Supabase-style query builders
+- Use standard HTTP status codes for error handling
+- Maintain proper TypeScript types for all API responses
 
 ## Type Safety Rules
 
@@ -48,6 +69,11 @@ interface ApiResponse {
 const data = (await apiCall()) as ApiResponse
 const files = data.files || []
 
+// ✅ CORRECT - REST-Native API calls
+export async function getWorkspaceById(id: string): Promise<WorkspaceRow> {
+  return await apiClient.get<WorkspaceRow>(`/api/workspaces/${id}`)
+}
+
 // ✅ CORRECT - Ask user to create missing types
 // "I see this API returns { files: FileRow[], collections: CollectionRow[] }. 
 // Should I create a new type interface for this response structure?"
@@ -59,6 +85,18 @@ const files = data.files || []
 - [ ] All return types are explicitly defined
 - [ ] API responses use proper interface definitions
 - [ ] User was consulted before creating new types
+- [ ] REST-Native API design with simple HTTP endpoints
+- [ ] Proper error handling with HTTP status codes
+- [ ] TypeScript types match expected API response structures
 
 ## Remember
 Type safety is not optional. Every TypeScript error is pointing to a real potential runtime issue. Address the root cause, don't mask it with `any`.
+
+## Migration Strategy
+When migrating from mock client to HTTP API:
+1. **Create `lib/api/client.ts`** with proper HTTP client implementation
+2. **Design REST-native endpoints** that are simple and intuitive
+3. **Migrate one function at a time** to minimize risk
+4. **Maintain exact function signatures** in `db/*.ts` files
+5. **Use proper TypeScript types** for all API responses
+6. **Test each migration** to ensure build passes and functionality works
