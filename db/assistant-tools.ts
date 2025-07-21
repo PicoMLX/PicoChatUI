@@ -22,44 +22,22 @@ export const getAssistantToolsByAssistantId = async (assistantId: string) => {
 }
 
 export const createAssistantTool = async (assistantTool: any) => {
-  const createdAssistantTool = await dbClient
-    .from("assistant_tools")
-    .insert(assistantTool)
-    .select("*")
-
-  if (!createdAssistantTool) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdAssistantTool
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
-export const createAssistantTools = async (
-  assistantTools: TablesInsert<"assistant_tools">[]
-) => {
-  const createdAssistantTools = await dbClient
-    .from("assistant_tools")
-    .insert(assistantTools)
-    .select("*")
-
-  if (!createdAssistantTools) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdAssistantTools
+export const createAssistantTools = async (assistantTools: any[]) => {
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const deleteAssistantTool = async (
   assistantId: string,
   toolId: string
 ) => {
-  const { error } = await dbClient
-    .from("assistant_tools")
-    .delete()
-    .eq("assistant_id", assistantId)
-    .eq("tool_id", toolId)
-
-  throw new Error("Database operation failed")
-
-  return true
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
