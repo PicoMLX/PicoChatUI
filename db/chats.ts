@@ -2,77 +2,40 @@ import { dbClient } from "@/lib/db/client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
 export const getChatById = async (chatId: string) => {
-  const { data: chat } = await dbClient
-    .from("chats")
-    .select("*")
-    .eq("id", chatId)
-    .maybeSingle()
-
-  return chat
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const getChatsByWorkspaceId = async (workspaceId: string) => {
-  const chats = await dbClient
-    .from("chats")
-    .select("*")
-    .eq("workspace_id", workspaceId)
-    .order("created_at", { ascending: false })
-
-  if (!chats) {
-    throw new Error("Database operation failed")
-  }
-
-  return chats
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const createChat = async (chat: TablesInsert<"chats">) => {
-  const createdChat = await dbClient
-    .from("chats")
-    .insert([chat])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdChat
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const createChats = async (chats: TablesInsert<"chats">[]) => {
-  const createdChats = await dbClient.from("chats").insert(chats).select("*")
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdChats
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const updateChat = async (
   chatId: string,
   chat: TablesUpdate<"chats">
 ) => {
-  const updatedChat = await dbClient
-    .from("chats")
-    .update(chat)
-    .eq("id", chatId)
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return updatedChat
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const deleteChat = async (chatId: string) => {
-  const { error } = await dbClient.from("chats").delete().eq("id", chatId)
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return true
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }

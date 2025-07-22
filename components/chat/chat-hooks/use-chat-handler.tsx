@@ -325,17 +325,9 @@ export const useChatHandler = () => {
           setChatFiles
         )
       } else {
-        const updatedChat = await updateChat(currentChat.id, {
-          updated_at: new Date().toISOString()
-        })
-
-        setChats(prevChats => {
-          const updatedChats = prevChats.map(prevChat =>
-            prevChat.id === updatedChat.id ? updatedChat : prevChat
-          )
-
-          return updatedChats
-        })
+        // Temporarily disabled for static export testing
+        // TODO: Migrate to REST API like assistant-collections
+        throw new Error("Chat update not yet migrated to REST API")
       }
 
       if (!currentChat) {

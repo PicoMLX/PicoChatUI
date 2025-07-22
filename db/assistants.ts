@@ -66,38 +66,15 @@ export const createAssistant = async (
   // Temporarily disabled for static export testing
   // TODO: Migrate to REST API like assistant-collections
   throw new Error("Function not yet migrated to REST API")
-
-  await createAssistantWorkspace({
-    user_id: createdAssistant.user_id,
-    assistant_id: createdAssistant.id,
-    workspace_id
-  })
-
-  return createdAssistant
 }
 
 export const createAssistants = async (
   assistants: TablesInsert<"assistants">[],
   workspace_id: string
 ) => {
-  const createdAssistants = await dbClient
-    .from("assistants")
-    .insert(assistants)
-    .select("*")
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  await createAssistantWorkspaces(
-    createdAssistants.map(assistant => ({
-      user_id: assistant.user_id,
-      assistant_id: assistant.id,
-      workspace_id
-    }))
-  )
-
-  return createdAssistants
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const createAssistantWorkspace = async (item: {
@@ -105,74 +82,39 @@ export const createAssistantWorkspace = async (item: {
   assistant_id: string
   workspace_id: string
 }) => {
-  const createdAssistantWorkspace = await dbClient
-    .from("assistant_workspaces")
-    .insert([item])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdAssistantWorkspace
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const createAssistantWorkspaces = async (
   items: { user_id: string; assistant_id: string; workspace_id: string }[]
 ) => {
-  const createdAssistantWorkspaces = await dbClient
-    .from("assistant_workspaces")
-    .insert(items)
-    .select("*")
-
-  throw new Error("Database operation failed")
-
-  return createdAssistantWorkspaces
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const updateAssistant = async (
   assistantId: string,
   assistant: TablesUpdate<"assistants">
 ) => {
-  const updatedAssistant = await dbClient
-    .from("assistants")
-    .update(assistant)
-    .eq("id", assistantId)
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return updatedAssistant
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const deleteAssistant = async (assistantId: string) => {
-  const { error } = await dbClient
-    .from("assistants")
-    .delete()
-    .eq("id", assistantId)
-
-  if (error) {
-    throw new Error("Database operation failed")
-  }
-
-  return true
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const deleteAssistantWorkspace = async (
   assistantId: string,
   workspaceId: string
 ) => {
-  const { error } = await dbClient
-    .from("assistant_workspaces")
-    .delete()
-    .eq("assistant_id", assistantId)
-    .eq("workspace_id", workspaceId)
-
-  throw new Error("Database operation failed")
-
-  return true
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }

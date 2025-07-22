@@ -16,12 +16,17 @@ struct ChatController: Sendable {
             .get("tags", use: self.tags)
     }
     
-    @Sendable func chat(_ request: Request, context: some RequestContext) async throws -> DummyResponse {
-        return DummyResponse()
+    @Sendable func chat(_ request: Request, context: some RequestContext) async throws -> [String: Any] {
+        return [
+            "message": "Chat endpoint not implemented yet",
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ]
     }
     
-    @Sendable func tags(_ request: Request, context: some RequestContext) async throws -> DummyResponse {
-        return DummyResponse()
+    @Sendable func tags(_ request: Request, context: some RequestContext) async throws -> [String: Any] {
+        return [
+            "tags": [],
+            "message": "Tags endpoint not implemented yet"
+        ]
     }
 }
-

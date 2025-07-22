@@ -99,24 +99,33 @@ struct Server: AsyncParsableCommand {
         
         // MARK: - Chat endpoints
         
-        // MARK: - Auth endpoints. Real auth: TODO
+        // MARK: - Auth endpoints
         let userController = UserController()
         userController.addRoutes(to: router.group("pico/v1/auth"))
         
         //        pico/v1/keys          - GET: Get API key configuration
         
+        // MARK: - Username endpoints  
         router.group("pico/v1/username")
             .post("available") { request, context in
-                return DummyResponse()
+                // TODO: Implement username availability check
+                return [
+                    "available": true,
+                    "message": "Username is available"
+                ]
             }
             .get("get") { request, context in
-                return DummyResponse()
+                // TODO: Implement get username
+                return [
+                    "username": "test_user",
+                    "display_name": "Test User"
+                ]
             }
 
         // MARK: - Assistant endpoint
         // pico/v1/assistants/openai    - POST: OpenAI assistant operations
         
-        // MARK: - Document endpoint
+        // MARK: - Storage endpoints
         let storageController = StorageController()
         storageController.addRoutes(to: router.group("pico/v1/storage"))
   
@@ -124,13 +133,25 @@ struct Server: AsyncParsableCommand {
         // MARK: - Retrieval endpoints
         router.group("pico/v1/retrieval")
             .post("retrieve") { request, context in
-                return DummyResponse()
+                // TODO: Implement document retrieval
+                return [
+                    "results": [],
+                    "message": "Retrieval endpoint not implemented yet"
+                ]
             }
             .post("process") { request, context in
-                return DummyResponse()
+                // TODO: Implement document processing
+                return [
+                    "processed": true,
+                    "message": "Document processing endpoint not implemented yet"
+                ]
             }
             .post("process/docx") { request, context in
-                return DummyResponse()
+                // TODO: Implement DOCX processing
+                return [
+                    "processed": true,
+                    "message": "DOCX processing endpoint not implemented yet"
+                ]
             }
                 
         // MARK: - DB endpoints
