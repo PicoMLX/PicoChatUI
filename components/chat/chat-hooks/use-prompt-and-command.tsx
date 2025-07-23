@@ -177,9 +177,9 @@ export const usePromptAndCommand = () => {
       const collectionFiles = collectionFilesData.files
       allFiles = [...allFiles, ...collectionFiles]
     }
-    const { data: assistantToolsData } = (await getAssistantToolsByAssistantId(
+    const assistantToolsData = await getAssistantToolsByAssistantId(
       assistant.id
-    )) as AssistantToolsResponse
+    )
     const assistantTools = assistantToolsData.tools
 
     setSelectedTools(assistantTools)

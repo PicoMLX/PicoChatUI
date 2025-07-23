@@ -138,10 +138,9 @@ export const useChatHandler = () => {
         const collectionFiles = collectionFilesData.files || []
         allFiles = [...allFiles, ...collectionFiles]
       }
-      const { data: assistantToolsData } =
-        (await getAssistantToolsByAssistantId(
-          selectedAssistant.id
-        )) as AssistantToolsResponse
+      const assistantToolsData = await getAssistantToolsByAssistantId(
+        selectedAssistant.id
+      )
       const assistantTools = assistantToolsData.tools || []
 
       setSelectedTools(assistantTools)
