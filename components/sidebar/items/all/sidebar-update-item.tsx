@@ -520,44 +520,13 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
         await deleteAssistantTool(assistantId, tool.id)
       }
 
-      let updatedAssistant = await updateAssistant(assistantId, rest)
+      // Temporarily disabled for static export testing
+      // TODO: Migrate to REST API like assistant-collections
+      throw new Error("Assistant update not yet migrated to REST API")
 
-      if (image) {
-        const filePath = await uploadAssistantImage(updatedAssistant, image)
-
-        updatedAssistant = await updateAssistant(assistantId, {
-          image_path: filePath
-        })
-
-        const url = (await getAssistantImageFromStorage(filePath)) || ""
-
-        if (url) {
-          const response = await fetch(url)
-          const blob = await response.blob()
-          const base64 = await convertBlobToBase64(blob)
-
-          setAssistantImages(prev => [
-            ...prev,
-            {
-              assistantId: updatedAssistant.id,
-              path: filePath,
-              base64,
-              url
-            }
-          ])
-        }
-      }
-
-      await handleWorkspaceUpdates(
-        startingWorkspaces,
-        selectedWorkspaces,
-        assistantId,
-        deleteAssistantWorkspace,
-        createAssistantWorkspaces as any,
-        "assistant_id"
-      )
-
-      return updatedAssistant
+      // Temporarily disabled for static export testing
+      // TODO: Migrate to REST API like assistant-collections
+      throw new Error("Assistant update not yet migrated to REST API")
     },
     tools: async (toolId: string, updateState: TablesUpdate<"tools">) => {
       const updatedTool = await updateTool(toolId, updateState)

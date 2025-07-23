@@ -14,13 +14,27 @@ struct StorageController: Sendable {
         group
 //            .add(middleware: self.sessionAuthenticator) // See 
             .post("upload") { request, context in
-                return DummyResponse()
+                // TODO: Implement file upload
+                return [
+                    "success": true,
+                    "file_id": UUID().uuidString,
+                    "message": "File upload endpoint not implemented yet"
+                ]
             }
             .delete("remove") { request, context in
-                return DummyResponse()
+                // TODO: Implement file removal
+                return [
+                    "success": true,
+                    "message": "File removal endpoint not implemented yet"
+                ]
             }
             .post("signed-url") { request, context in
-                return DummyResponse()
+                // TODO: Implement signed URL generation
+                return [
+                    "signed_url": "https://example.com/placeholder-signed-url",
+                    "expires_in": 3600,
+                    "message": "Signed URL endpoint not implemented yet"
+                ]
             }
         
             
@@ -39,11 +53,16 @@ struct StorageController: Sendable {
 
     }
     
-    @Sendable func chat(_ request: Request, context: some RequestContext) async throws -> DummyResponse {
-        return DummyResponse()
+    @Sendable func chat(_ request: Request, context: some RequestContext) async throws -> [String: Any] {
+        return [
+            "message": "Chat endpoint not implemented yet"
+        ]
     }
     
-    @Sendable func tags(_ request: Request, context: some RequestContext) async throws -> DummyResponse {
-        return DummyResponse()
+    @Sendable func tags(_ request: Request, context: some RequestContext) async throws -> [String: Any] {
+        return [
+            "tags": [],
+            "message": "Tags endpoint not implemented yet"
+        ]
     }
 }
