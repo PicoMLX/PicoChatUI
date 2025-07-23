@@ -12,10 +12,4 @@ import SwiftData
 @ModelActor
 public actor ChatModelActor {
     
-    /// Initialize the ChatModelActor with the given model context
-    /// - Parameter modelContainer: The SwiftData model container
-    public init(modelContainer: ModelContainer) {
-        let modelContext = ModelContext(modelContainer)
-        self.init(modelExecutor: DefaultSerialExecutor.shared, modelContext: modelContext)
-    }
 }

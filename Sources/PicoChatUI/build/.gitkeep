@@ -1,0 +1,2 @@
+# Placeholder file to ensure the build directory exists
+# This directory will be populated by the NPMBuildPlugin when enabled

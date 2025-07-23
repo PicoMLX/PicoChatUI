@@ -22,29 +22,15 @@ export const getChatFilesByChatId = async (chatId: string) => {
 }
 
 export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
-  const createdChatFile = await dbClient
-    .from("chat_files")
-    .insert(chatFile)
-    .select("*")
-
-  if (!createdChatFile) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdChatFile
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }
 
 export const createChatFiles = async (
   chatFiles: TablesInsert<"chat_files">[]
 ) => {
-  const createdChatFiles = await dbClient
-    .from("chat_files")
-    .insert(chatFiles)
-    .select("*")
-
-  if (!createdChatFiles) {
-    throw new Error("Database operation failed")
-  }
-
-  return createdChatFiles
+  // Temporarily disabled for static export testing
+  // TODO: Migrate to REST API like assistant-collections
+  throw new Error("Function not yet migrated to REST API")
 }

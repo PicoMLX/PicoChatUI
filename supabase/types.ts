@@ -69,6 +69,11 @@ export interface Database {
         Insert: CollectionFileInsert
         Update: CollectionFileUpdate
       }
+      chat_files: {
+        Row: ChatFileRow
+        Insert: ChatFileInsert
+        Update: ChatFileUpdate
+      }
       file_items: {
         Row: FileItemRow
         Insert: FileItemInsert
@@ -326,6 +331,15 @@ export interface CollectionFileRow {
   updated_at: string
 }
 
+export interface ChatFileRow {
+  id: string
+  user_id: string
+  chat_id: string
+  file_id: string
+  created_at: string
+  updated_at: string
+}
+
 // Insert types (typically optional id, created_at, updated_at)
 export type ProfileInsert = Omit<ProfileRow, 'id' | 'created_at' | 'updated_at'>
 export type WorkspaceInsert = Omit<WorkspaceRow, 'id' | 'created_at' | 'updated_at'>
@@ -341,6 +355,7 @@ export type ModelInsert = Omit<ModelRow, 'id' | 'created_at' | 'updated_at'>
 export type FolderInsert = Omit<FolderRow, 'id' | 'created_at' | 'updated_at'>
 export type FileItemInsert = Omit<FileItemRow, 'id' | 'created_at' | 'updated_at'>
 export type CollectionFileInsert = Omit<CollectionFileRow, 'id' | 'created_at' | 'updated_at'>
+export type ChatFileInsert = Omit<ChatFileRow, 'id' | 'created_at' | 'updated_at'>
 
 // Update types (all fields optional except for id and created_at)
 export type ProfileUpdate = Partial<Omit<ProfileRow, 'id' | 'created_at'>>
@@ -357,6 +372,7 @@ export type ModelUpdate = Partial<Omit<ModelRow, 'id' | 'created_at'>>
 export type FolderUpdate = Partial<Omit<FolderRow, 'id' | 'created_at'>>
 export type FileItemUpdate = Partial<Omit<FileItemRow, 'id' | 'created_at'>>
 export type CollectionFileUpdate = Partial<Omit<CollectionFileRow, 'id' | 'created_at'>>
+export type ChatFileUpdate = Partial<Omit<ChatFileRow, 'id' | 'created_at'>>
 
 // Helper types for easy access
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']

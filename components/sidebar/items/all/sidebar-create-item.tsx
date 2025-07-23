@@ -113,61 +113,9 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
       } & Tables<"assistants">,
       workspaceId: string
     ) => {
-      const { image, files, collections, tools, ...rest } = createState
-
-      const createdAssistant = await createAssistant(rest, workspaceId)
-
-      let updatedAssistant = createdAssistant
-
-      if (image) {
-        const filePath = await uploadAssistantImage(createdAssistant, image)
-
-        updatedAssistant = await updateAssistant(createdAssistant.id, {
-          image_path: filePath
-        })
-
-        const url = (await getAssistantImageFromStorage(filePath)) || ""
-
-        if (url) {
-          const response = await fetch(url)
-          const blob = await response.blob()
-          const base64 = await convertBlobToBase64(blob)
-
-          setAssistantImages(prev => [
-            ...prev,
-            {
-              assistantId: updatedAssistant.id,
-              path: filePath,
-              base64,
-              url
-            }
-          ])
-        }
-      }
-
-      const assistantFiles = files.map(file => ({
-        user_id: rest.user_id,
-        assistant_id: createdAssistant.id,
-        file_id: file.id
-      }))
-
-      const assistantCollections = collections.map(collection => ({
-        user_id: rest.user_id,
-        assistant_id: createdAssistant.id,
-        collection_id: collection.id
-      }))
-
-      const assistantTools = tools.map(tool => ({
-        user_id: rest.user_id,
-        assistant_id: createdAssistant.id,
-        tool_id: tool.id
-      }))
-
-      await createAssistantFiles(assistantFiles)
-      await createAssistantCollections(assistantCollections)
-      await createAssistantTools(assistantTools)
-
-      return updatedAssistant
+      // Temporarily disabled for static export testing
+      // TODO: Migrate to REST API like assistant-collections
+      throw new Error("Assistant creation not yet migrated to REST API")
     },
     tools: createTool,
     models: createModel
