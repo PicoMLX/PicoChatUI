@@ -1,91 +1,131 @@
 import { dbClient } from "@/lib/db/client"
+import { apiGet, apiPost, apiPut, apiDelete, withAuth } from "@/lib/api/client"
+import { WorkspaceRow } from "@/supabase/types"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
-export const getHomeWorkspaceByUserId = async (userId: string) => {
-  const homeWorkspace = await dbClient
-    .from("workspaces")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("is_home", true)
-    .single()
+export const getHomeWorkspaceByUserId = async (
+  userId: string,
+  authToken?: string
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiGet<{ id: string }>(
+    `/api/users/${userId}/home-workspace`,
+    {},
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (!homeWorkspace) {
+  if (response.error) {
+    throw new Error(`Failed to fetch home workspace: ${response.error.message}`)
+  }
+
+  if (!response.data) {
     throw new Error("Database operation failed")
   }
 
-  return homeWorkspace.id
+  return response.data.id
 }
 
-export const getWorkspaceById = async (workspaceId: string) => {
-  const workspace = await dbClient
-    .from("workspaces")
-    .select("*")
-    .eq("id", workspaceId)
-    .single()
+export const getWorkspaceById = async (
+  workspaceId: string,
+  authToken?: string
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiGet<WorkspaceRow>(
+    `/api/workspaces/${workspaceId}`,
+    {},
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (!workspace) {
+  if (response.error) {
+    throw new Error(`Failed to fetch workspace: ${response.error.message}`)
+  }
+
+  if (!response.data) {
     throw new Error("Database operation failed")
   }
 
-  return workspace
+  return response.data
 }
 
-export const getWorkspacesByUserId = async (userId: string) => {
-  const workspaces = await dbClient
-    .from("workspaces")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
+export const getWorkspacesByUserId = async (
+  userId: string,
+  authToken?: string
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiGet<WorkspaceRow[]>(
+    `/api/users/${userId}/workspaces`,
+    {},
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (!workspaces) {
+  if (response.error) {
+    throw new Error(`Failed to fetch workspaces: ${response.error.message}`)
+  }
+
+  if (!response.data) {
     throw new Error("Database operation failed")
   }
 
-  return workspaces
+  return response.data
 }
 
 export const createWorkspace = async (
-  workspace: TablesInsert<"workspaces">
+  workspace: TablesInsert<"workspaces">,
+  authToken?: string
 ) => {
-  const createdWorkspace = await dbClient
-    .from("workspaces")
-    .insert([workspace])
-    .select("*")
-    .single()
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiPost<WorkspaceRow>(
+    "/api/workspaces",
+    workspace,
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (error) {
-    throw new Error("Database operation failed")
+  if (response.error) {
+    throw new Error(`Failed to create workspace: ${response.error.message}`)
   }
 
-  return createdWorkspace
+  if (!response.data) {
+    throw new Error("Failed to create workspace: No data returned")
+  }
+
+  return response.data
 }
 
 export const updateWorkspace = async (
   workspaceId: string,
-  workspace: TablesUpdate<"workspaces">
+  workspace: TablesUpdate<"workspaces">,
+  authToken?: string
 ) => {
-  const updatedWorkspace = await dbClient
-    .from("workspaces")
-    .update(workspace)
-    .eq("id", workspaceId)
-    .select("*")
-    .single()
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiPut<WorkspaceRow>(
+    `/api/workspaces/${workspaceId}`,
+    workspace,
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (error) {
-    throw new Error("Database operation failed")
+  if (response.error) {
+    throw new Error(`Failed to update workspace: ${response.error.message}`)
   }
 
-  return updatedWorkspace
+  if (!response.data) {
+    throw new Error("Failed to update workspace: No data returned")
+  }
+
+  return response.data
 }
 
-export const deleteWorkspace = async (workspaceId: string) => {
-  const { error } = await dbClient
-    .from("workspaces")
-    .delete()
-    .eq("id", workspaceId)
+export const deleteWorkspace = async (
+  workspaceId: string,
+  authToken?: string
+) => {
+  // REST-native API call to Swift Hummingbird backend
+  const response = await apiDelete(
+    `/api/workspaces/${workspaceId}`,
+    authToken ? withAuth(authToken) : undefined
+  )
 
-  if (error) {
-    throw new Error("Database operation failed")
+  if (response.error) {
+    throw new Error(`Failed to delete workspace: ${response.error.message}`)
   }
 
   return true
